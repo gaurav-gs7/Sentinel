@@ -98,6 +98,14 @@ This runs a production-style local pipeline:
 17. Lists Helios-style workflow runs for audit evidence.
 18. Writes evidence to `artifacts/local-ci-cd/`.
 
+## Failure-Mode Demo
+
+```bash
+make demo-failures
+```
+
+This runs production failure scenarios and writes evidence under `artifacts/failure-modes/`: bad canary rollback, low-traffic sample hold, Prometheus fail-closed behavior, PostgreSQL startup failure, duplicate onboarding idempotency, invalid metadata rejection, and rollback evidence recording. See `docs/failure-modes.md`.
+
 ## Kubernetes Controller
 
 Sentinel includes a controller/operator for `RolloutGuard` resources:

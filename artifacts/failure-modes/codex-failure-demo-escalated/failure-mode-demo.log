@@ -1,0 +1,36 @@
+[17:05:08] starting failure-mode demo; artifacts will be written to artifacts/failure-modes/codex-failure-demo-escalated
+[17:05:08] proving PostgreSQL unavailable fails predictably during startup
+[17:05:09] starting Sentinel API with unavailable Prometheus URL to prove fail-closed SLO behavior
+2026/05/17 22:35:09 sentinel api listening on 127.0.0.1:18081
+{"time":"2026-05-17T22:35:10.14797+05:30","level":"INFO","msg":"request","method":"GET","path":"/readyz","status":200,"duration_ms":1,"remote_addr":"127.0.0.1:55884"}
+[17:05:10] proving invalid service metadata is rejected
+{"time":"2026-05-17T22:35:10.167033+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services","status":422,"duration_ms":3,"remote_addr":"127.0.0.1:55885"}
+[17:05:10] proving duplicate onboarding is idempotent
+{"time":"2026-05-17T22:35:10.201352+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services","status":201,"duration_ms":17,"remote_addr":"127.0.0.1:55886"}
+{"time":"2026-05-17T22:35:10.213431+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services","status":200,"duration_ms":3,"remote_addr":"127.0.0.1:55887"}
+[17:05:10] proving low traffic waits for more samples instead of rolling back
+{"time":"2026-05-17T22:35:10.227437+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services/failure-api/health-gate","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:55888"}
+[17:05:10] proving a bad canary records rollback intent
+{"time":"2026-05-17T22:35:10.243001+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services/failure-api/health-gate","status":202,"duration_ms":0,"remote_addr":"127.0.0.1:55889"}
+{"time":"2026-05-17T22:35:10.256649+05:30","level":"INFO","msg":"request","method":"GET","path":"/api/v1/services/failure-api/deployments","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:55890"}
+[17:05:10] proving Prometheus unavailable causes safe degraded fail-closed behavior
+{"time":"2026-05-17T22:35:10.28329+05:30","level":"INFO","msg":"request","method":"GET","path":"/api/v1/services/failure-api/slos","status":200,"duration_ms":2,"remote_addr":"127.0.0.1:55891"}
+[17:05:10] failure-mode demo passed; evidence written to artifacts/failure-modes/codex-failure-demo-escalated
+[17:05:35] starting failure-mode demo; artifacts will be written to artifacts/failure-modes/codex-failure-demo-escalated
+[17:05:35] proving PostgreSQL unavailable fails predictably during startup
+[17:05:36] starting Sentinel API with unavailable Prometheus URL to prove fail-closed SLO behavior
+2026/05/17 22:35:36 sentinel api listening on 127.0.0.1:18081
+{"time":"2026-05-17T22:35:37.763617+05:30","level":"INFO","msg":"request","method":"GET","path":"/readyz","status":200,"duration_ms":1,"remote_addr":"127.0.0.1:55906"}
+[17:05:37] proving invalid service metadata is rejected
+{"time":"2026-05-17T22:35:37.776336+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services","status":422,"duration_ms":1,"remote_addr":"127.0.0.1:55907"}
+[17:05:37] proving duplicate onboarding is idempotent
+{"time":"2026-05-17T22:35:37.797723+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services","status":201,"duration_ms":8,"remote_addr":"127.0.0.1:55908"}
+{"time":"2026-05-17T22:35:37.810658+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services","status":200,"duration_ms":3,"remote_addr":"127.0.0.1:55909"}
+[17:05:37] proving low traffic waits for more samples instead of rolling back
+{"time":"2026-05-17T22:35:37.825333+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services/failure-api/health-gate","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:55910"}
+[17:05:37] proving a bad canary records rollback intent
+{"time":"2026-05-17T22:35:37.845374+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services/failure-api/health-gate","status":202,"duration_ms":0,"remote_addr":"127.0.0.1:55911"}
+{"time":"2026-05-17T22:35:37.861452+05:30","level":"INFO","msg":"request","method":"GET","path":"/api/v1/services/failure-api/deployments","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:55912"}
+[17:05:37] proving Prometheus unavailable causes safe degraded fail-closed behavior
+{"time":"2026-05-17T22:35:37.888461+05:30","level":"INFO","msg":"request","method":"GET","path":"/api/v1/services/failure-api/slos","status":200,"duration_ms":2,"remote_addr":"127.0.0.1:55913"}
+[17:05:37] failure-mode demo passed; evidence written to artifacts/failure-modes/codex-failure-demo-escalated

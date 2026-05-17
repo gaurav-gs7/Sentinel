@@ -1,0 +1,1 @@
+{"scenario":"postgresql-unavailable-fails-predictably","status":"passed","evidence":"artifacts/failure-modes/codex-failure-demo/postgres-unavailable.log"}

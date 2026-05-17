@@ -86,6 +86,34 @@ func TestHealthGateRecordsRollbackDeployment(t *testing.T) {
 	}
 }
 
+func TestSLOEvaluationFailsClosedWhenPrometheusUnavailable(t *testing.T) {
+	server := testServer(t, WithAPIToken("secret"), WithPrometheusURL("http://127.0.0.1:1"))
+	createBody := []byte(`{
+		"name":"payments-api",
+		"team":"platform",
+		"owner":"gaurav",
+		"language":"go",
+		"environment":"staging",
+		"slo":"99.9",
+		"deploymentStrategy":"canary"
+	}`)
+	created := authorizedRequest(server, http.MethodPost, "/api/v1/services", createBody)
+	if created.Code != http.StatusCreated {
+		t.Fatalf("expected create 201, got %d: %s", created.Code, created.Body.String())
+	}
+
+	slos := authorizedRequest(server, http.MethodGet, "/api/v1/services/payments-api/slos", nil)
+	if slos.Code != http.StatusOK {
+		t.Fatalf("expected slos 200, got %d: %s", slos.Code, slos.Body.String())
+	}
+	if !bytes.Contains(slos.Body.Bytes(), []byte(`"deploymentGate":"blocked"`)) {
+		t.Fatalf("expected deployment gate to fail closed, got %s", slos.Body.String())
+	}
+	if !bytes.Contains(slos.Body.Bytes(), []byte("Prometheus unavailable")) {
+		t.Fatalf("expected Prometheus outage reason, got %s", slos.Body.String())
+	}
+}
+
 func testServer(t *testing.T, opts ...Option) *Server {
 	t.Helper()
 	root := filepath.Clean("../../..")

@@ -30,6 +30,7 @@ func main() {
 	handler := httpapi.NewServer(store, generator,
 		httpapi.WithAPIToken(cfg.APIToken),
 		httpapi.WithMaxBodyBytes(cfg.MaxBodyMB*1024*1024),
+		httpapi.WithPrometheusURL(cfg.PrometheusURL),
 	)
 
 	server := &http.Server{

@@ -1,0 +1,7 @@
+{
+  "status": "failed",
+  "detail": "failure-mode demo failed near line 117",
+  "runId": "codex-failure-demo",
+  "service": "failure-api",
+  "artifacts": "artifacts/failure-modes/codex-failure-demo"
+}

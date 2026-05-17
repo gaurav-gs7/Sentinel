@@ -1,4 +1,4 @@
-.PHONY: fmt test build run-api run-cli run-controller demo demo-full validate-service compose-up compose-down clean
+.PHONY: fmt test build run-api run-cli run-controller demo demo-full demo-failures validate-service compose-up compose-down clean
 
 fmt:
 	go fmt ./...
@@ -25,6 +25,9 @@ demo:
 
 demo-full:
 	bash scripts/local-ci-cd.sh
+
+demo-failures:
+	bash scripts/failure-mode-demo.sh
 
 validate-service:
 	bash scripts/validate-service-scaffold.sh generated/services/payments-api

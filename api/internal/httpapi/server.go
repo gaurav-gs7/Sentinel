@@ -26,15 +26,16 @@ import (
 )
 
 type Server struct {
-	store        catalog.Store
-	generator    *templates.Generator
-	apiToken     string
-	maxBodyBytes int64
-	startedAt    time.Time
-	metrics      *serverMetrics
-	incidentMu   sync.RWMutex
-	incidents    map[string]models.IncidentRecord
-	workflows    *workflows.Engine
+	store         catalog.Store
+	generator     *templates.Generator
+	apiToken      string
+	maxBodyBytes  int64
+	prometheusURL string
+	startedAt     time.Time
+	metrics       *serverMetrics
+	incidentMu    sync.RWMutex
+	incidents     map[string]models.IncidentRecord
+	workflows     *workflows.Engine
 }
 
 type Option func(*Server)
@@ -50,6 +51,12 @@ func WithMaxBodyBytes(bytes int64) Option {
 		if bytes > 0 {
 			s.maxBodyBytes = bytes
 		}
+	}
+}
+
+func WithPrometheusURL(url string) Option {
+	return func(s *Server) {
+		s.prometheusURL = strings.TrimRight(strings.TrimSpace(url), "/")
 	}
 }
 
@@ -324,12 +331,39 @@ func (s *Server) slos(w http.ResponseWriter, r *http.Request) {
 			Name:        "evaluate-sli-signals-and-error-budget",
 			MaxAttempts: 1,
 			Run: func(context.Context) error {
-				status = sloengine.Evaluate(service, sloengine.DefaultSignals(service))
+				status = s.evaluateSLO(r.Context(), service)
 				return nil
 			},
 		}},
 	})
 	writeJSON(w, http.StatusOK, map[string]any{"slo": status, "workflow": run})
+}
+
+func (s *Server) evaluateSLO(ctx context.Context, service models.Service) models.SLOStatus {
+	status := sloengine.Evaluate(service, sloengine.DefaultSignals(service))
+	if s.prometheusURL == "" {
+		return status
+	}
+	checkCtx, cancel := context.WithTimeout(ctx, 2*time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(checkCtx, http.MethodGet, s.prometheusURL+"/-/ready", nil)
+	if err != nil {
+		status.DeploymentGate = "blocked"
+		status.Reason = "Prometheus unavailable; deployment gate fails closed"
+		return status
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		status.DeploymentGate = "blocked"
+		status.Reason = "Prometheus unavailable; deployment gate fails closed"
+		return status
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		status.DeploymentGate = "blocked"
+		status.Reason = fmt.Sprintf("Prometheus unavailable; readiness returned %s and deployment gate fails closed", resp.Status)
+	}
+	return status
 }
 
 func (s *Server) deployments(w http.ResponseWriter, r *http.Request) {

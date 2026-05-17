@@ -1,0 +1,8 @@
+[16:55:31] starting failure-mode demo; artifacts will be written to artifacts/failure-modes/codex-failure-demo
+[16:55:31] proving PostgreSQL unavailable fails predictably during startup
+[16:55:33] starting Sentinel API with unavailable Prometheus URL to prove fail-closed SLO behavior
+2026/05/17 22:25:34 sentinel api listening on 127.0.0.1:18081
+2026/05/17 22:25:34 server error: listen tcp 127.0.0.1:18081: bind: operation not permitted
+exit status 1
+[16:56:35] timed out waiting for http://127.0.0.1:18081/readyz
+[16:56:35] failure-mode demo failed near line 117
