@@ -1,0 +1,51 @@
+{
+  "title": "{{ .Service.Name }} Golden Signals",
+  "tags": ["sentinel", "{{ .Service.Team }}", "{{ .Service.Environment }}"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Request Rate",
+      "targets": [{"expr": "sum(rate(http_requests_total{service=\"{{ .Service.Name }}\"}[5m]))"}],
+      "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8}
+    },
+    {
+      "type": "timeseries",
+      "title": "Error Rate",
+      "targets": [{"expr": "sum(rate(http_requests_total{service=\"{{ .Service.Name }}\",status=~\"5..\"}[5m])) / sum(rate(http_requests_total{service=\"{{ .Service.Name }}\"}[5m])) * 100"}],
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8}
+    },
+    {
+      "type": "timeseries",
+      "title": "P95 Latency",
+      "targets": [{"expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{service=\"{{ .Service.Name }}\"}[5m])) by (le)) * 1000"}],
+      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8}
+    },
+    {
+      "type": "timeseries",
+      "title": "P99 Latency",
+      "targets": [{"expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{service=\"{{ .Service.Name }}\"}[5m])) by (le)) * 1000"}],
+      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8}
+    },
+    {
+      "type": "timeseries",
+      "title": "Pod Restarts",
+      "targets": [{"expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=\"{{ .Service.Namespace }}\"}[15m]))"}],
+      "gridPos": {"x": 0, "y": 16, "w": 12, "h": 8}
+    },
+    {
+      "type": "timeseries",
+      "title": "Database P95 Latency",
+      "targets": [{"expr": "histogram_quantile(0.95, sum(rate(db_query_duration_seconds_bucket{service=\"{{ .Service.Name }}\"}[5m])) by (le, operation)) * 1000"}],
+      "gridPos": {"x": 12, "y": 16, "w": 12, "h": 8}
+    },
+    {
+      "type": "timeseries",
+      "title": "Active DB Connections",
+      "targets": [{"expr": "db_connections_active{service=\"{{ .Service.Name }}\"}"}],
+      "gridPos": {"x": 0, "y": 24, "w": 12, "h": 8}
+    }
+  ]
+}

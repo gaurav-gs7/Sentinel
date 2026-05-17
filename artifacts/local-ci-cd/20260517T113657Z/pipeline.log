@@ -1,0 +1,452 @@
+[11:36:57] starting local CI/CD pipeline for payments-api
+[11:36:57] preflight checks
+[11:36:57] + docker info
+Client:
+ Version:    27.3.1
+ Context:    desktop-linux
+ Debug Mode: false
+ Plugins:
+  ai: Ask Gordon - Docker Agent (Docker Inc.)
+    Version:  v0.1.0
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-ai
+  buildx: Docker Buildx (Docker Inc.)
+    Version:  v0.18.0-desktop.2
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-buildx
+  compose: Docker Compose (Docker Inc.)
+    Version:  v2.30.3-desktop.1
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-compose
+  debug: Get a shell into any image or container (Docker Inc.)
+    Version:  0.0.37
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-debug
+  desktop: Docker Desktop commands (Alpha) (Docker Inc.)
+    Version:  v0.0.15
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-desktop
+  dev: Docker Dev Environments (Docker Inc.)
+    Version:  v0.1.2
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-dev
+  extension: Manages Docker extensions (Docker Inc.)
+    Version:  v0.2.27
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-extension
+  feedback: Provide feedback, right in your terminal! (Docker Inc.)
+    Version:  v1.0.5
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-feedback
+  init: Creates Docker-related starter files for your project (Docker Inc.)
+    Version:  v1.4.0
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-init
+  sbom: View the packaged-based Software Bill Of Materials (SBOM) for an image (Anchore Inc.)
+    Version:  0.6.0
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-sbom
+  scout: Docker Scout (Docker Inc.)
+    Version:  v1.15.0
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-scout
+
+Server:
+ Containers: 9
+  Running: 0
+  Paused: 0
+  Stopped: 9
+ Images: 36
+ Server Version: 27.3.1
+ Storage Driver: overlayfs
+  driver-type: io.containerd.snapshotter.v1
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Cgroup Version: 2
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+ Swarm: inactive
+ Runtimes: runc io.containerd.runc.v2
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: 472731909fa34bd7bc9c087e4c27943f9835f111
+ runc version: v1.1.13-0-g58aa920
+ init version: de40ad0
+ Security Options:
+  seccomp
+   Profile: unconfined
+  cgroupns
+ Kernel Version: 6.10.14-linuxkit
+ Operating System: Docker Desktop
+ OSType: linux
+ Architecture: aarch64
+ CPUs: 8
+ Total Memory: 3.827GiB
+ Name: docker-desktop
+ ID: cac94e10-c67e-431b-8934-c43300988562
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ HTTP Proxy: http.docker.internal:3128
+ HTTPS Proxy: http.docker.internal:3128
+ No Proxy: hubproxy.docker.internal
+ Labels:
+  com.docker.desktop.address=unix:///Users/gauravgs7/Library/Containers/com.docker.docker/Data/docker-cli.sock
+ Experimental: false
+ Insecure Registries:
+  hubproxy.docker.internal:5555
+  127.0.0.0/8
+ Live Restore Enabled: false
+
+WARNING: daemon is not using the default seccomp profile
+[11:36:58] trivy not found; image scan will be recorded as skipped
+[11:36:58] starting Aegis API at 127.0.0.1:8080
+2026/05/17 17:06:58 aegis api listening on 127.0.0.1:8080
+{"time":"2026-05-17T17:06:59.563138+05:30","level":"INFO","msg":"request","method":"GET","path":"/readyz","status":200,"duration_ms":2,"remote_addr":"127.0.0.1:50386"}
+[11:36:59] onboarding payments-api through Aegis
+[11:36:59] + env GOCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gocache GOMODCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gomodcache AEGIS_API_TOKEN=local-dev-token AEGIS_API_URL=http://127.0.0.1:8080 go run ./cli/cmd/aegis service init payments-api --language go --team platform --owner gaurav --tier critical --pager payments-oncall --namespace platform --env staging --slo-availability 99.9 --slo-latency-p95 300ms --deployment canary
+{"time":"2026-05-17T17:06:59.781411+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services","status":201,"duration_ms":10,"remote_addr":"127.0.0.1:50387"}
+{
+  "generated": {
+    "files": [
+      "generated/services/payments-api/Dockerfile",
+      "generated/services/payments-api/Makefile",
+      "generated/services/payments-api/README.md",
+      "generated/services/payments-api/cmd/server/main.go",
+      "generated/services/payments-api/go.mod",
+      "generated/services/payments-api/aegis-service.yaml",
+      "generated/services/payments-api/rollout.yaml",
+      "generated/services/payments-api/slo.yaml",
+      "generated/services/payments-api/.github/workflows/ci.yml",
+      "generated/services/payments-api/k8s/base/deployment.yaml",
+      "generated/services/payments-api/k8s/base/hpa.yaml",
+      "generated/services/payments-api/k8s/base/kustomization.yaml",
+      "generated/services/payments-api/k8s/base/namespace.yaml",
+      "generated/services/payments-api/k8s/base/pdb.yaml",
+      "generated/services/payments-api/k8s/base/service.yaml",
+      "generated/services/payments-api/k8s/base/serviceaccount.yaml",
+      "generated/services/payments-api/k8s/overlays/dev/kustomization.yaml",
+      "generated/services/payments-api/k8s/overlays/staging/kustomization.yaml",
+      "generated/services/payments-api/k8s/overlays/prod/kustomization.yaml",
+      "generated/services/payments-api/observability/dashboard.json",
+      "generated/services/payments-api/observability/alerts.yaml",
+      "generated/services/payments-api/observability/prometheus-rules.yaml",
+      "generated/services/payments-api/observability/servicemonitor.yaml",
+      "generated/services/payments-api/observability/jaeger.yaml",
+      "generated/services/payments-api/observability/otel-collector.yaml",
+      "generated/services/payments-api/runbooks/incident-runbook.md",
+      "generated/services/payments-api/infra/terraform/main.tf",
+      "generated/services/payments-api/infra/argocd/application.yaml"
+    ],
+    "outputPath": "generated/services/payments-api",
+    "serviceName": "payments-api"
+  },
+  "idempotent": false,
+  "service": {
+    "createdAt": "2026-05-17T11:36:59.772581Z",
+    "dashboardUrl": "observability/dashboard.json",
+    "deploymentStrategy": "canary",
+    "environment": "staging",
+    "id": "df66a6bc-1738-4895-893a-f2e3b62de8ef",
+    "language": "go",
+    "name": "payments-api",
+    "namespace": "platform",
+    "owner": "gaurav",
+    "pager": "payments-oncall",
+    "repository": "github.com/example/payments-api",
+    "rollbackOnFailure": true,
+    "runbookUrl": "runbooks/incident-runbook.md",
+    "sloErrorRate": 1,
+    "sloLatencyP95Ms": 300,
+    "sloTarget": 99.9,
+    "team": "platform",
+    "tier": "critical",
+    "updatedAt": "2026-05-17T11:36:59.772581Z"
+  },
+  "workflow": {
+    "attempt": 1,
+    "completedAt": "2026-05-17T11:36:59.781287Z",
+    "events": [
+      {
+        "message": "service-onboarding workflow started",
+        "timestamp": "2026-05-17T11:36:59.772574Z",
+        "type": "workflow-started"
+      },
+      {
+        "message": "persist-service-metadata",
+        "timestamp": "2026-05-17T11:36:59.772579Z",
+        "type": "step-started"
+      },
+      {
+        "message": "persist-service-metadata",
+        "timestamp": "2026-05-17T11:36:59.772582Z",
+        "type": "step-succeeded"
+      },
+      {
+        "message": "record-initial-deployment",
+        "timestamp": "2026-05-17T11:36:59.772585Z",
+        "type": "step-started"
+      },
+      {
+        "message": "record-initial-deployment",
+        "timestamp": "2026-05-17T11:36:59.772586Z",
+        "type": "step-succeeded"
+      },
+      {
+        "message": "render-golden-path-scaffold",
+        "timestamp": "2026-05-17T11:36:59.77259Z",
+        "type": "step-started"
+      },
+      {
+        "message": "render-golden-path-scaffold",
+        "timestamp": "2026-05-17T11:36:59.781286Z",
+        "type": "step-succeeded"
+      },
+      {
+        "message": "service-onboarding workflow completed",
+        "timestamp": "2026-05-17T11:36:59.781287Z",
+        "type": "workflow-succeeded"
+      }
+    ],
+    "id": "wf-b6672b02-d53a-4a8b-8acc-b6f2c9896fb8",
+    "kind": "aegis.service.onboarding",
+    "maxAttempts": 1,
+    "name": "service-onboarding",
+    "service": "payments-api",
+    "startedAt": "2026-05-17T11:36:59.772574Z",
+    "state": "succeeded",
+    "steps": [
+      {
+        "attempt": 1,
+        "completedAt": "2026-05-17T11:36:59.772582Z",
+        "maxAttempts": 1,
+        "name": "persist-service-metadata",
+        "startedAt": "2026-05-17T11:36:59.772579Z",
+        "state": "succeeded"
+      },
+      {
+        "attempt": 1,
+        "completedAt": "2026-05-17T11:36:59.772586Z",
+        "maxAttempts": 1,
+        "name": "record-initial-deployment",
+        "startedAt": "2026-05-17T11:36:59.772585Z",
+        "state": "succeeded"
+      },
+      {
+        "attempt": 1,
+        "completedAt": "2026-05-17T11:36:59.781286Z",
+        "maxAttempts": 2,
+        "name": "render-golden-path-scaffold",
+        "startedAt": "2026-05-17T11:36:59.77259Z",
+        "state": "succeeded"
+      }
+    ]
+  }
+}
+[11:36:59] running local CI checks for generated/services/payments-api
+[11:36:59] + scripts/validate-service-scaffold.sh generated/services/payments-api
+service scaffold validation passed for generated/services/payments-api
+[11:36:59] + (cd generated/services/payments-api && env GOCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gocache GOMODCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gomodcache go test ./...)
+?   	payments-api/cmd/server	[no test files]
+[11:37:00] + kubectl kustomize generated/services/payments-api/k8s/overlays/staging
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    aegis.dev/environment: staging
+    aegis.dev/team: platform
+  name: platform
+---
+apiVersion: v1
+automountServiceAccountToken: false
+kind: ServiceAccount
+metadata:
+  labels:
+    aegis.dev/environment: staging
+  name: payments-api
+  namespace: platform
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    aegis.dev/environment: staging
+  name: payments-api
+  namespace: platform
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+  selector:
+    aegis.dev/environment: staging
+    app.kubernetes.io/name: payments-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    aegis.dev/environment: staging
+    app.kubernetes.io/managed-by: aegis
+    app.kubernetes.io/name: payments-api
+  name: payments-api
+  namespace: platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      aegis.dev/environment: staging
+      app.kubernetes.io/name: payments-api
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+      labels:
+        aegis.dev/environment: staging
+        app.kubernetes.io/name: payments-api
+    spec:
+      containers:
+      - env:
+        - name: OTEL_SERVICE_NAME
+          value: payments-api
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://otel-collector.platform.svc.cluster.local:4317
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: service.namespace=platform,deployment.environment=staging,aegis.team=platform
+        image: ghcr.io/example/payments-api:latest
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /readyz
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 20
+        name: app
+        ports:
+        - containerPort: 8080
+          name: http
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: http
+          initialDelaySeconds: 3
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: payments-api
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    aegis.dev/environment: staging
+    aegis.dev/tier: critical
+    app.kubernetes.io/name: payments-api
+  name: payments-api
+  namespace: platform
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      aegis.dev/environment: staging
+      app.kubernetes.io/name: payments-api
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    aegis.dev/environment: staging
+  name: payments-api
+  namespace: platform
+spec:
+  maxReplicas: 5
+  metrics:
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 70
+        type: Utilization
+    type: Resource
+  minReplicas: 2
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: payments-api
+[11:37:00] pinned stable manifest image to ghcr.io/example/payments-api:20260517T113657Z-stable
+[11:37:00] pinned canary manifest image to ghcr.io/example/payments-api:20260517T113657Z-canary
+[11:37:00] building stable and canary container images
+[11:37:00] + docker build -t ghcr.io/example/payments-api:20260517T113657Z-stable -t ghcr.io/example/payments-api:20260517T113657Z-canary generated/services/payments-api
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 365B 0.0s done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/golang:1.23-alpine
+#2 ...
+
+#3 [internal] load metadata for gcr.io/distroless/static-debian12:nonroot
+#3 DONE 0.7s
+
+#2 [internal] load metadata for docker.io/library/golang:1.23-alpine
+#2 DONE 2.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [stage-1 1/2] FROM gcr.io/distroless/static-debian12:nonroot@sha256:a9329520abc449e3b14d5bc3a6ffae065bdde0f02667fa10880c49b35c109fd1
+#5 resolve gcr.io/distroless/static-debian12:nonroot@sha256:a9329520abc449e3b14d5bc3a6ffae065bdde0f02667fa10880c49b35c109fd1 done
+#5 DONE 0.0s
+
+#6 [build 1/6] FROM docker.io/library/golang:1.23-alpine@sha256:383395b794dffa5b53012a212365d40c8e37109a626ca30d6151c8348d380b5f
+#6 resolve docker.io/library/golang:1.23-alpine@sha256:383395b794dffa5b53012a212365d40c8e37109a626ca30d6151c8348d380b5f done
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 23.68kB 0.0s done
+#7 DONE 0.0s
+
+#8 [build 6/6] RUN CGO_ENABLED=0 go build -o /out/service ./cmd/server
+#8 CACHED
+
+#9 [build 2/6] WORKDIR /src
+#9 CACHED
+
+#10 [build 3/6] COPY go.mod ./
+#10 CACHED
+
+#11 [build 4/6] RUN go mod download
+#11 CACHED
+
+#12 [build 5/6] COPY . .
+#12 CACHED
+
+#13 [stage-1 2/2] COPY --from=build /out/service /service
+#13 CACHED
+
+#14 exporting to image
+#14 exporting layers done
+#14 exporting manifest sha256:0efa8995331e38d4f9f94a605d61716dcbe1488896a9de7c98b22f71f8113848 done
+#14 exporting config sha256:9488476d97c868c4eb7f7a106dc31a0e8400d8cc5f49948d6d32086424cb6b82 done
+#14 exporting attestation manifest sha256:d73858a6e8b76a8dc831bd75899f0a8130ad00d80baa2210066837ffa5b6218d 0.0s done
+#14 exporting manifest list sha256:dc409d6ce1a9bcac6edfa3b6c82d841f24c6fcca434cfdc6f0ffd8401c67915e done
+#14 naming to ghcr.io/example/payments-api:20260517T113657Z-stable done
+#14 unpacking to ghcr.io/example/payments-api:20260517T113657Z-stable done
+#14 naming to ghcr.io/example/payments-api:20260517T113657Z-canary done
+#14 unpacking to ghcr.io/example/payments-api:20260517T113657Z-canary done
+#14 DONE 0.1s
+[11:37:03] kind cluster aegis-local already exists
+[11:37:03] + kind export kubeconfig --name aegis-local
+ERROR: failed to get cluster internal kubeconfig: command "docker exec --privileged aegis-local-control-plane cat /etc/kubernetes/admin.conf" failed with error: exit status 1
+
+Command Output: Error response from daemon: container ccb5fdd87e5949ba9c21d44e5e2704d1bb5402037ec85cb9005d1734572a9c78 is not running
+[11:37:03] pipeline failed near line 55

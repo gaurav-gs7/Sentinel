@@ -1,0 +1,23 @@
+terraform {
+  required_version = ">= 1.6.0"
+  required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.29"
+    }
+  }
+}
+
+variable "namespace" {
+  type    = string
+  default = "{{ .Service.Namespace }}"
+}
+
+resource "kubernetes_namespace" "{{ .Service.Name }}" {
+  metadata {
+    name = var.namespace
+    labels = {
+      "sentinel.dev/team" = "{{ .Service.Team }}"
+    }
+  }
+}

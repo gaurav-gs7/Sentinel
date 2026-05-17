@@ -1,0 +1,843 @@
+[17:31:39] starting local CI/CD pipeline for payments-api
+[17:31:39] preflight checks
+[17:31:39] + docker info
+Client:
+ Version:    27.3.1
+ Context:    desktop-linux
+ Debug Mode: false
+ Plugins:
+  ai: Ask Gordon - Docker Agent (Docker Inc.)
+    Version:  v0.1.0
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-ai
+  buildx: Docker Buildx (Docker Inc.)
+    Version:  v0.18.0-desktop.2
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-buildx
+  compose: Docker Compose (Docker Inc.)
+    Version:  v2.30.3-desktop.1
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-compose
+  debug: Get a shell into any image or container (Docker Inc.)
+    Version:  0.0.37
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-debug
+  desktop: Docker Desktop commands (Alpha) (Docker Inc.)
+    Version:  v0.0.15
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-desktop
+  dev: Docker Dev Environments (Docker Inc.)
+    Version:  v0.1.2
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-dev
+  extension: Manages Docker extensions (Docker Inc.)
+    Version:  v0.2.27
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-extension
+  feedback: Provide feedback, right in your terminal! (Docker Inc.)
+    Version:  v1.0.5
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-feedback
+  init: Creates Docker-related starter files for your project (Docker Inc.)
+    Version:  v1.4.0
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-init
+  sbom: View the packaged-based Software Bill Of Materials (SBOM) for an image (Anchore Inc.)
+    Version:  0.6.0
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-sbom
+  scout: Docker Scout (Docker Inc.)
+    Version:  v1.15.0
+    Path:     /Users/gauravgs7/.docker/cli-plugins/docker-scout
+
+Server:
+ Containers: 8
+  Running: 1
+  Paused: 0
+  Stopped: 7
+ Images: 34
+ Server Version: 27.3.1
+ Storage Driver: overlayfs
+  driver-type: io.containerd.snapshotter.v1
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Cgroup Version: 2
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+ Swarm: inactive
+ Runtimes: io.containerd.runc.v2 runc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: 472731909fa34bd7bc9c087e4c27943f9835f111
+ runc version: v1.1.13-0-g58aa920
+ init version: de40ad0
+ Security Options:
+  seccomp
+   Profile: unconfined
+  cgroupns
+ Kernel Version: 6.10.14-linuxkit
+ Operating System: Docker Desktop
+ OSType: linux
+ Architecture: aarch64
+ CPUs: 8
+ Total Memory: 3.827GiB
+ Name: docker-desktop
+ ID: cac94e10-c67e-431b-8934-c43300988562
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ HTTP Proxy: http.docker.internal:3128
+ HTTPS Proxy: http.docker.internal:3128
+ No Proxy: hubproxy.docker.internal
+ Labels:
+  com.docker.desktop.address=unix:///Users/gauravgs7/Library/Containers/com.docker.docker/Data/docker-cli.sock
+ Experimental: false
+ Insecure Registries:
+  hubproxy.docker.internal:5555
+  127.0.0.0/8
+ Live Restore Enabled: false
+
+WARNING: daemon is not using the default seccomp profile
+[17:31:40] trivy not found; image scan will be recorded as skipped
+[17:31:40] starting Aegis API at 127.0.0.1:8080
+2026/05/16 23:01:40 aegis api listening on 127.0.0.1:8080
+{"time":"2026-05-16T23:01:41.415916+05:30","level":"INFO","msg":"request","method":"GET","path":"/readyz","status":200,"duration_ms":1,"remote_addr":"127.0.0.1:51084"}
+[17:31:41] onboarding payments-api through Aegis
+[17:31:41] + env GOCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gocache GOMODCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gomodcache AEGIS_API_TOKEN=local-dev-token AEGIS_API_URL=http://127.0.0.1:8080 go run ./cli/cmd/aegis service init payments-api --language go --team platform --owner gaurav --tier critical --pager payments-oncall --namespace platform --env staging --slo-availability 99.9 --slo-latency-p95 300ms --deployment canary
+{"time":"2026-05-16T23:01:41.631328+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services","status":201,"duration_ms":12,"remote_addr":"127.0.0.1:51085"}
+{
+  "generated": {
+    "files": [
+      "generated/services/payments-api/Dockerfile",
+      "generated/services/payments-api/Makefile",
+      "generated/services/payments-api/README.md",
+      "generated/services/payments-api/cmd/server/main.go",
+      "generated/services/payments-api/go.mod",
+      "generated/services/payments-api/aegis-service.yaml",
+      "generated/services/payments-api/rollout.yaml",
+      "generated/services/payments-api/slo.yaml",
+      "generated/services/payments-api/.github/workflows/ci.yml",
+      "generated/services/payments-api/k8s/base/deployment.yaml",
+      "generated/services/payments-api/k8s/base/hpa.yaml",
+      "generated/services/payments-api/k8s/base/kustomization.yaml",
+      "generated/services/payments-api/k8s/base/namespace.yaml",
+      "generated/services/payments-api/k8s/base/pdb.yaml",
+      "generated/services/payments-api/k8s/base/service.yaml",
+      "generated/services/payments-api/k8s/base/serviceaccount.yaml",
+      "generated/services/payments-api/k8s/overlays/dev/kustomization.yaml",
+      "generated/services/payments-api/k8s/overlays/staging/kustomization.yaml",
+      "generated/services/payments-api/k8s/overlays/prod/kustomization.yaml",
+      "generated/services/payments-api/observability/dashboard.json",
+      "generated/services/payments-api/observability/alerts.yaml",
+      "generated/services/payments-api/observability/prometheus-rules.yaml",
+      "generated/services/payments-api/observability/servicemonitor.yaml",
+      "generated/services/payments-api/observability/jaeger.yaml",
+      "generated/services/payments-api/observability/otel-collector.yaml",
+      "generated/services/payments-api/runbooks/incident-runbook.md",
+      "generated/services/payments-api/infra/terraform/main.tf",
+      "generated/services/payments-api/infra/argocd/application.yaml"
+    ],
+    "outputPath": "generated/services/payments-api",
+    "serviceName": "payments-api"
+  },
+  "service": {
+    "createdAt": "2026-05-16T17:31:41.620997Z",
+    "dashboardUrl": "observability/dashboard.json",
+    "deploymentStrategy": "canary",
+    "environment": "staging",
+    "id": "7e1b38df-f207-4fc7-bcff-fb7c7ef6ef8e",
+    "language": "go",
+    "name": "payments-api",
+    "namespace": "platform",
+    "owner": "gaurav",
+    "pager": "payments-oncall",
+    "repository": "github.com/example/payments-api",
+    "rollbackOnFailure": true,
+    "runbookUrl": "runbooks/incident-runbook.md",
+    "sloErrorRate": 1,
+    "sloLatencyP95Ms": 300,
+    "sloTarget": 99.9,
+    "team": "platform",
+    "tier": "critical",
+    "updatedAt": "2026-05-16T17:31:41.620997Z"
+  }
+}
+[17:31:41] running local CI checks for generated/services/payments-api
+[17:31:41] + scripts/validate-service-scaffold.sh generated/services/payments-api
+service scaffold validation passed for generated/services/payments-api
+[17:31:42] + (cd generated/services/payments-api && env GOCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gocache GOMODCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gomodcache go test ./...)
+?   	payments-api/cmd/server	[no test files]
+[17:31:42] + kubectl kustomize generated/services/payments-api/k8s/overlays/staging
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    aegis.dev/environment: staging
+    aegis.dev/team: platform
+  name: platform
+---
+apiVersion: v1
+automountServiceAccountToken: false
+kind: ServiceAccount
+metadata:
+  labels:
+    aegis.dev/environment: staging
+  name: payments-api
+  namespace: platform
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    aegis.dev/environment: staging
+  name: payments-api
+  namespace: platform
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+  selector:
+    aegis.dev/environment: staging
+    app.kubernetes.io/name: payments-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    aegis.dev/environment: staging
+    app.kubernetes.io/managed-by: aegis
+    app.kubernetes.io/name: payments-api
+  name: payments-api
+  namespace: platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      aegis.dev/environment: staging
+      app.kubernetes.io/name: payments-api
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+      labels:
+        aegis.dev/environment: staging
+        app.kubernetes.io/name: payments-api
+    spec:
+      containers:
+      - env:
+        - name: OTEL_SERVICE_NAME
+          value: payments-api
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://otel-collector.platform.svc.cluster.local:4317
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: service.namespace=platform,deployment.environment=staging,aegis.team=platform
+        image: ghcr.io/example/payments-api:latest
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /readyz
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 20
+        name: app
+        ports:
+        - containerPort: 8080
+          name: http
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: http
+          initialDelaySeconds: 3
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: payments-api
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    aegis.dev/environment: staging
+    aegis.dev/tier: critical
+    app.kubernetes.io/name: payments-api
+  name: payments-api
+  namespace: platform
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      aegis.dev/environment: staging
+      app.kubernetes.io/name: payments-api
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    aegis.dev/environment: staging
+  name: payments-api
+  namespace: platform
+spec:
+  maxReplicas: 5
+  metrics:
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 70
+        type: Utilization
+    type: Resource
+  minReplicas: 2
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: payments-api
+[17:31:42] pinned stable manifest image to ghcr.io/example/payments-api:20260516T173139Z-stable
+[17:31:42] pinned canary manifest image to ghcr.io/example/payments-api:20260516T173139Z-canary
+[17:31:42] building stable and canary container images
+[17:31:42] + docker build -t ghcr.io/example/payments-api:20260516T173139Z-stable -t ghcr.io/example/payments-api:20260516T173139Z-canary generated/services/payments-api
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 365B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/golang:1.23-alpine
+#2 ...
+
+#3 [internal] load metadata for gcr.io/distroless/static-debian12:nonroot
+#3 DONE 0.7s
+
+#2 [internal] load metadata for docker.io/library/golang:1.23-alpine
+#2 DONE 1.8s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [build 1/6] FROM docker.io/library/golang:1.23-alpine@sha256:383395b794dffa5b53012a212365d40c8e37109a626ca30d6151c8348d380b5f
+#5 resolve docker.io/library/golang:1.23-alpine@sha256:383395b794dffa5b53012a212365d40c8e37109a626ca30d6151c8348d380b5f 0.0s done
+#5 DONE 0.0s
+
+#6 [stage-1 1/2] FROM gcr.io/distroless/static-debian12:nonroot@sha256:a9329520abc449e3b14d5bc3a6ffae065bdde0f02667fa10880c49b35c109fd1
+#6 resolve gcr.io/distroless/static-debian12:nonroot@sha256:a9329520abc449e3b14d5bc3a6ffae065bdde0f02667fa10880c49b35c109fd1 0.0s done
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 23.68kB 0.0s done
+#7 DONE 0.0s
+
+#8 [build 2/6] WORKDIR /src
+#8 CACHED
+
+#9 [build 3/6] COPY go.mod ./
+#9 CACHED
+
+#10 [build 4/6] RUN go mod download
+#10 CACHED
+
+#11 [build 5/6] COPY . .
+#11 DONE 0.2s
+
+#12 [build 6/6] RUN CGO_ENABLED=0 go build -o /out/service ./cmd/server
+#12 DONE 10.0s
+
+#13 [stage-1 2/2] COPY --from=build /out/service /service
+#13 CACHED
+
+#14 exporting to image
+#14 exporting layers done
+#14 exporting manifest sha256:0efa8995331e38d4f9f94a605d61716dcbe1488896a9de7c98b22f71f8113848 done
+#14 exporting config sha256:9488476d97c868c4eb7f7a106dc31a0e8400d8cc5f49948d6d32086424cb6b82 done
+#14 exporting attestation manifest sha256:658304c8f051eddb43ca4c16c99c0fee8659883101ce93e5aab83811edb65039 0.0s done
+#14 exporting manifest list sha256:8487aa729b64415007ee31cfd8c683d60c9131d5c57d219d01de891080cc0493 done
+#14 naming to ghcr.io/example/payments-api:20260516T173139Z-stable done
+#14 unpacking to ghcr.io/example/payments-api:20260516T173139Z-stable done
+#14 naming to ghcr.io/example/payments-api:20260516T173139Z-canary done
+#14 unpacking to ghcr.io/example/payments-api:20260516T173139Z-canary done
+#14 DONE 0.1s
+[17:31:55] creating kind cluster aegis-local
+[17:31:55] + kind create cluster --name aegis-local --wait 120s
+Creating cluster "aegis-local" ...
+ • Ensuring node image (kindest/node:v1.35.0) 🖼  ...
+ ✓ Ensuring node image (kindest/node:v1.35.0) 🖼
+ • Preparing nodes 📦   ...
+ ✓ Preparing nodes 📦 
+ • Writing configuration 📜  ...
+ ✓ Writing configuration 📜
+ • Starting control-plane 🕹️  ...
+ ✓ Starting control-plane 🕹️
+ • Installing CNI 🔌  ...
+ ✓ Installing CNI 🔌
+ • Installing StorageClass 💾  ...
+ ✓ Installing StorageClass 💾
+ • Waiting ≤ 2m0s for control-plane = Ready ⏳  ...
+ ✓ Waiting ≤ 2m0s for control-plane = Ready ⏳
+ • Ready after 17s 💚
+Set kubectl context to "kind-aegis-local"
+You can now use your cluster with:
+
+kubectl cluster-info --context kind-aegis-local
+
+Not sure what to do next? 😅  Check out https://kind.sigs.k8s.io/docs/user/quick-start/
+[17:32:35] loading image into kind
+[17:32:35] + kind load docker-image ghcr.io/example/payments-api:20260516T173139Z-stable --name aegis-local
+Image: "ghcr.io/example/payments-api:20260516T173139Z-stable" with ID "sha256:8487aa729b64415007ee31cfd8c683d60c9131d5c57d219d01de891080cc0493" not yet present on node "aegis-local-control-plane", loading...
+[17:32:42] + kind load docker-image ghcr.io/example/payments-api:20260516T173139Z-canary --name aegis-local
+Image: "ghcr.io/example/payments-api:20260516T173139Z-canary" with ID "sha256:8487aa729b64415007ee31cfd8c683d60c9131d5c57d219d01de891080cc0493" not yet present on node "aegis-local-control-plane", loading...
+[17:32:43] deploying stable rendered manifests
+[17:32:43] + kubectl config use-context kind-aegis-local
+Switched to context "kind-aegis-local".
+[17:32:45] + kubectl create namespace platform --dry-run=client -o yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: platform
+spec: {}
+status: {}
+namespace/platform created
+[17:32:45] + kubectl -n platform delete pod -l app.kubernetes.io/name=payments-api --field-selector=status.phase!=Running --ignore-not-found=true
+No resources found
+[17:32:45] + kubectl apply --dry-run=server -f artifacts/local-ci-cd/20260516T173139Z/rendered-stable.yaml
+namespace/platform configured (server dry run)
+serviceaccount/payments-api created (server dry run)
+service/payments-api created (server dry run)
+deployment.apps/payments-api created (server dry run)
+poddisruptionbudget.policy/payments-api created (server dry run)
+horizontalpodautoscaler.autoscaling/payments-api created (server dry run)
+[17:32:46] + kubectl apply -f artifacts/local-ci-cd/20260516T173139Z/rendered-stable.yaml
+namespace/platform configured
+serviceaccount/payments-api created
+service/payments-api created
+deployment.apps/payments-api created
+poddisruptionbudget.policy/payments-api created
+horizontalpodautoscaler.autoscaling/payments-api created
+[17:32:46] + kubectl -n platform rollout status deployment/payments-api --timeout=180s
+Waiting for deployment "payments-api" rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment "payments-api" rollout to finish: 1 of 2 updated replicas are available...
+deployment "payments-api" successfully rolled out
+[17:32:58] deployment image is ghcr.io/example/payments-api:20260516T173139Z-stable
+[17:32:58] deploying canary rendered manifests
+[17:32:58] + kubectl apply --dry-run=server -f artifacts/local-ci-cd/20260516T173139Z/rendered-canary.yaml
+namespace/platform unchanged (server dry run)
+serviceaccount/payments-api unchanged (server dry run)
+service/payments-api unchanged (server dry run)
+deployment.apps/payments-api configured (server dry run)
+poddisruptionbudget.policy/payments-api configured (server dry run)
+horizontalpodautoscaler.autoscaling/payments-api unchanged (server dry run)
+[17:32:58] + kubectl apply -f artifacts/local-ci-cd/20260516T173139Z/rendered-canary.yaml
+namespace/platform unchanged
+serviceaccount/payments-api unchanged
+service/payments-api unchanged
+deployment.apps/payments-api configured
+poddisruptionbudget.policy/payments-api configured
+horizontalpodautoscaler.autoscaling/payments-api unchanged
+[17:32:59] + kubectl -n platform rollout status deployment/payments-api --timeout=180s
+Waiting for deployment "payments-api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "payments-api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "payments-api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "payments-api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "payments-api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "payments-api" rollout to finish: 1 old replicas are pending termination...
+deployment "payments-api" successfully rolled out
+[17:33:23] deployment image is ghcr.io/example/payments-api:20260516T173139Z-canary
+[17:33:23] + kubectl -n platform get deployment/payments-api service/payments-api hpa/payments-api -o wide
+NAME                           READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                                                 SELECTOR
+deployment.apps/payments-api   2/2     2            2           37s   app          ghcr.io/example/payments-api:20260516T173139Z-canary   aegis.dev/environment=staging,app.kubernetes.io/name=payments-api
+
+NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE   SELECTOR
+service/payments-api   ClusterIP   10.96.124.121   <none>        80/TCP    37s   aegis.dev/environment=staging,app.kubernetes.io/name=payments-api
+
+NAME                                               REFERENCE                 TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/payments-api   Deployment/payments-api   cpu: <unknown>/70%   2         5         2          37s
+[17:33:23] + kubectl -n platform get pods -l app.kubernetes.io/name=payments-api,aegis.dev/environment=staging --field-selector=status.phase=Running -o wide
+NAME                            READY   STATUS    RESTARTS   AGE   IP           NODE                        NOMINATED NODE   READINESS GATES
+payments-api-69bd8c9686-kwrlg   1/1     Running   0          25s   10.244.0.7   aegis-local-control-plane   <none>           <none>
+payments-api-69bd8c9686-zxrx5   1/1     Running   0          12s   10.244.0.8   aegis-local-control-plane   <none>           <none>
+[17:33:23] verifying service readiness and metrics through port-forward
+Forwarding from 127.0.0.1:18080 -> 8080
+Forwarding from [::1]:18080 -> 8080
+Handling connection for 18080
+[17:33:24] + curl -fsS http://127.0.0.1:18080/readyz
+Handling connection for 18080
+{"status":"ready"}
+[17:33:24] + curl -fsS http://127.0.0.1:18080/metrics
+Handling connection for 18080
+# HELP http_requests_total Total HTTP requests.
+# TYPE http_requests_total counter
+http_requests_total{service="payments-api",status="200"} 1
+# HELP http_request_duration_seconds HTTP request latency.
+# TYPE http_request_duration_seconds histogram
+http_request_duration_seconds_bucket{service="payments-api",le="0.3"} 1
+http_request_duration_seconds_bucket{service="payments-api",le="0.5"} 1
+http_request_duration_seconds_bucket{service="payments-api",le="+Inf"} 1
+http_request_duration_seconds_sum{service="payments-api"} 0.12
+http_request_duration_seconds_count{service="payments-api"} 1
+# HELP db_query_duration_seconds Database query latency.
+# TYPE db_query_duration_seconds histogram
+db_query_duration_seconds_bucket{service="payments-api",operation="read",le="0.05"} 1
+db_query_duration_seconds_bucket{service="payments-api",operation="read",le="0.1"} 1
+db_query_duration_seconds_bucket{service="payments-api",operation="read",le="+Inf"} 1
+db_query_duration_seconds_sum{service="payments-api",operation="read"} 0.04
+db_query_duration_seconds_count{service="payments-api",operation="read"} 1
+# HELP db_connections_active Active database connections.
+# TYPE db_connections_active gauge
+db_connections_active{service="payments-api"} 2
+[17:33:24] recording failed canary through Aegis health gate
+[17:33:24] + env GOCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gocache GOMODCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gomodcache AEGIS_API_TOKEN=local-dev-token AEGIS_API_URL=http://127.0.0.1:8080 go run ./cli/cmd/aegis health-gate --name payments-api --p99-latency-ms 450 --error-rate 0.2 --success-count 100
+{"time":"2026-05-16T23:03:24.992318+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services/payments-api/health-gate","status":202,"duration_ms":7,"remote_addr":"127.0.0.1:51172"}
+{
+  "decision": {
+    "action": "rollback",
+    "healthy": false,
+    "reason": "p99 latency 450.00ms exceeds 300.00ms"
+  },
+  "metrics": {
+    "errorRate": 0.2,
+    "p99LatencyMs": 450,
+    "successCount": 100
+  },
+  "rollbackDeployment": {
+    "environment": "staging",
+    "id": "1df2f7fc-4efa-461f-bf0d-34d7a459338d",
+    "serviceId": "7e1b38df-f207-4fc7-bcff-fb7c7ef6ef8e",
+    "startedAt": "2026-05-16T17:33:24.990567Z",
+    "status": "rollback-triggered",
+    "strategy": "canary",
+    "version": "healthgate-rollback-20260516173324"
+  },
+  "service": "payments-api"
+}
+[17:33:24] automating Kubernetes rollback to previous stable ReplicaSet
+[17:33:25] + kubectl -n platform rollout history deployment/payments-api
+deployment.apps/payments-api 
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+
+[17:33:25] + kubectl -n platform rollout undo deployment/payments-api
+deployment.apps/payments-api rolled back
+[17:33:25] + kubectl -n platform rollout status deployment/payments-api --timeout=180s
+Waiting for deployment "payments-api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "payments-api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "payments-api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "payments-api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "payments-api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "payments-api" rollout to finish: 1 old replicas are pending termination...
+deployment "payments-api" successfully rolled out
+[17:33:49] deployment image is ghcr.io/example/payments-api:20260516T173139Z-stable
+[17:33:49] + kubectl -n platform get deployment/payments-api -o wide
+NAME           READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                                                 SELECTOR
+payments-api   2/2     2            2           63s   app          ghcr.io/example/payments-api:20260516T173139Z-stable   aegis.dev/environment=staging,app.kubernetes.io/name=payments-api
+[17:33:49] rollback evidence written to artifacts/local-ci-cd/20260516T173139Z/rollback.json
+[17:33:49] + env GOCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gocache GOMODCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gomodcache AEGIS_API_TOKEN=local-dev-token AEGIS_API_URL=http://127.0.0.1:8080 go run ./cli/cmd/aegis check payments-api
+{"time":"2026-05-16T23:03:49.905704+05:30","level":"INFO","msg":"request","method":"GET","path":"/api/v1/services/payments-api/readiness","status":200,"duration_ms":7,"remote_addr":"127.0.0.1:51178"}
+{
+  "evaluatedAt": "2026-05-16T17:33:49.90031Z",
+  "failed": [
+    {
+      "message": "dependency metadata acceptable",
+      "name": "dependencies",
+      "recommendation": "list critical service dependencies",
+      "status": "fail",
+      "weight": 5
+    }
+  ],
+  "passed": [
+    {
+      "message": "owner and team metadata present",
+      "name": "ownership",
+      "status": "pass",
+      "weight": 10
+    },
+    {
+      "message": "pager/on-call metadata present",
+      "name": "pager",
+      "status": "pass",
+      "weight": 8
+    },
+    {
+      "message": "service tier classified",
+      "name": "tier",
+      "status": "pass",
+      "weight": 6
+    },
+    {
+      "message": "runbook link configured",
+      "name": "runbook",
+      "status": "pass",
+      "weight": 8
+    },
+    {
+      "message": "dashboard link configured",
+      "name": "dashboard",
+      "status": "pass",
+      "weight": 7
+    },
+    {
+      "message": "availability SLO configured",
+      "name": "slo",
+      "status": "pass",
+      "weight": 10
+    },
+    {
+      "message": "p95 latency SLO configured",
+      "name": "latency-slo",
+      "status": "pass",
+      "weight": 8
+    },
+    {
+      "message": "error-rate threshold configured",
+      "name": "error-rate-policy",
+      "status": "pass",
+      "weight": 7
+    },
+    {
+      "message": "rollout strategy configured",
+      "name": "deployment-strategy",
+      "status": "pass",
+      "weight": 8
+    },
+    {
+      "message": "automated rollback enabled",
+      "name": "rollback-policy",
+      "status": "pass",
+      "weight": 8
+    },
+    {
+      "message": "namespace configured",
+      "name": "namespace",
+      "status": "pass",
+      "weight": 5
+    },
+    {
+      "message": "repository linked",
+      "name": "repository",
+      "status": "pass",
+      "weight": 5
+    }
+  ],
+  "recommendations": [
+    "list critical service dependencies"
+  ],
+  "score": 94,
+  "service": "payments-api",
+  "tier": "critical"
+}
+[17:33:49] + env GOCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gocache GOMODCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gomodcache AEGIS_API_TOKEN=local-dev-token AEGIS_API_URL=http://127.0.0.1:8080 go run ./cli/cmd/aegis slo status payments-api
+{"time":"2026-05-16T23:03:49.991224+05:30","level":"INFO","msg":"request","method":"GET","path":"/api/v1/services/payments-api/slos","status":200,"duration_ms":1,"remote_addr":"127.0.0.1:51179"}
+{
+  "availabilityCurrent": 99.94000000000001,
+  "availabilityTarget": 99.9,
+  "burnRate": 0.7,
+  "deploymentGate": "allowed",
+  "errorBudgetRemainingPct": 40.00000000000853,
+  "errorRateCurrentPct": 0.2,
+  "errorRateThresholdPct": 1,
+  "evaluatedAt": "2026-05-16T17:33:49.989855Z",
+  "latencyP95CurrentMs": 240,
+  "latencyP95TargetMs": 300,
+  "reason": "SLOs healthy and error budget is above deployment threshold",
+  "service": "payments-api"
+}
+[17:33:49] + env GOCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gocache GOMODCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gomodcache AEGIS_API_TOKEN=local-dev-token AEGIS_API_URL=http://127.0.0.1:8080 go run ./cli/cmd/aegis deployments --name payments-api
+{"time":"2026-05-16T23:03:50.077982+05:30","level":"INFO","msg":"request","method":"GET","path":"/api/v1/services/payments-api/deployments","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:51180"}
+{
+  "deployments": [
+    {
+      "environment": "staging",
+      "id": "1df2f7fc-4efa-461f-bf0d-34d7a459338d",
+      "serviceId": "7e1b38df-f207-4fc7-bcff-fb7c7ef6ef8e",
+      "startedAt": "2026-05-16T17:33:24.990567Z",
+      "status": "rollback-triggered",
+      "strategy": "canary",
+      "version": "healthgate-rollback-20260516173324"
+    },
+    {
+      "environment": "staging",
+      "id": "c1e535b5-0338-46b5-acd8-343f03e74d29",
+      "serviceId": "7e1b38df-f207-4fc7-bcff-fb7c7ef6ef8e",
+      "startedAt": "2026-05-16T17:31:41.620998Z",
+      "status": "generated",
+      "strategy": "canary",
+      "version": "v0.1.0"
+    }
+  ],
+  "service": "payments-api"
+}
+[17:33:50] creating incident from simulated Alertmanager signal
+{"time":"2026-05-16T23:03:50.166423+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/incidents","status":201,"duration_ms":1,"remote_addr":"127.0.0.1:51181"}
+{
+  "events": [
+    {
+      "description": "payments-api rollout started with canary strategy",
+      "eventType": "deployment",
+      "timestamp": "2026-05-16T17:23:50.166314Z"
+    },
+    {
+      "description": "p95 latency increased to 850ms",
+      "eventType": "sli-degradation",
+      "timestamp": "2026-05-16T17:26:50.166314Z"
+    },
+    {
+      "description": "error budget remaining 0.0%",
+      "eventType": "slo-burn",
+      "timestamp": "2026-05-16T17:28:50.166314Z"
+    },
+    {
+      "description": "HighErrorRate fired for payments-api",
+      "eventType": "alert",
+      "timestamp": "2026-05-16T17:33:50.166314Z"
+    },
+    {
+      "description": "Aegis opened inc-20260516173350 and linked owner gaurav",
+      "eventType": "incident-created",
+      "timestamp": "2026-05-16T17:34:50.166314Z"
+    },
+    {
+      "description": "rollback recommended because incident correlates with recent rollout",
+      "eventType": "rollback-decision",
+      "timestamp": "2026-05-16T17:35:50.166314Z"
+    }
+  ],
+  "incident": {
+    "alertName": "HighErrorRate",
+    "createdAt": "2026-05-16T17:33:50.166314Z",
+    "id": "inc-20260516173350",
+    "service": "payments-api",
+    "serviceId": "7e1b38df-f207-4fc7-bcff-fb7c7ef6ef8e",
+    "severity": "critical",
+    "status": "active",
+    "title": "High error rate during canary"
+  },
+  "service": {
+    "createdAt": "2026-05-16T17:31:41.620997Z",
+    "dashboardUrl": "observability/dashboard.json",
+    "deploymentStrategy": "canary",
+    "environment": "staging",
+    "id": "7e1b38df-f207-4fc7-bcff-fb7c7ef6ef8e",
+    "language": "go",
+    "name": "payments-api",
+    "namespace": "platform",
+    "owner": "gaurav",
+    "pager": "payments-oncall",
+    "repository": "github.com/example/payments-api",
+    "rollbackOnFailure": true,
+    "runbookUrl": "runbooks/incident-runbook.md",
+    "sloErrorRate": 1,
+    "sloLatencyP95Ms": 300,
+    "sloTarget": 99.9,
+    "team": "platform",
+    "tier": "critical",
+    "updatedAt": "2026-05-16T17:31:41.620997Z"
+  },
+  "signals": {
+    "availabilityCurrent": 99.5,
+    "availabilityTarget": 99.9,
+    "burnRate": 4.2,
+    "deploymentGate": "blocked",
+    "errorBudgetRemainingPct": 0,
+    "errorRateCurrentPct": 8.2,
+    "errorRateThresholdPct": 1,
+    "evaluatedAt": "2026-05-16T17:33:50.166312Z",
+    "latencyP95CurrentMs": 850,
+    "latencyP95TargetMs": 300,
+    "reason": "error budget remaining 0.0% is below 10%",
+    "service": "payments-api"
+  }
+}
+[17:33:50] + env GOCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gocache GOMODCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gomodcache AEGIS_API_TOKEN=local-dev-token AEGIS_API_URL=http://127.0.0.1:8080 go run ./cli/cmd/aegis incident timeline inc-20260516173350
+{"time":"2026-05-16T23:03:50.259215+05:30","level":"INFO","msg":"request","method":"GET","path":"/api/v1/incidents/inc-20260516173350/timeline","status":200,"duration_ms":1,"remote_addr":"127.0.0.1:51182"}
+{
+  "incident": "inc-20260516173350",
+  "timeline": [
+    {
+      "description": "payments-api rollout started with canary strategy",
+      "eventType": "deployment",
+      "timestamp": "2026-05-16T17:23:50.166314Z"
+    },
+    {
+      "description": "p95 latency increased to 850ms",
+      "eventType": "sli-degradation",
+      "timestamp": "2026-05-16T17:26:50.166314Z"
+    },
+    {
+      "description": "error budget remaining 0.0%",
+      "eventType": "slo-burn",
+      "timestamp": "2026-05-16T17:28:50.166314Z"
+    },
+    {
+      "description": "HighErrorRate fired for payments-api",
+      "eventType": "alert",
+      "timestamp": "2026-05-16T17:33:50.166314Z"
+    },
+    {
+      "description": "Aegis opened inc-20260516173350 and linked owner gaurav",
+      "eventType": "incident-created",
+      "timestamp": "2026-05-16T17:34:50.166314Z"
+    },
+    {
+      "description": "rollback recommended because incident correlates with recent rollout",
+      "eventType": "rollback-decision",
+      "timestamp": "2026-05-16T17:35:50.166314Z"
+    }
+  ]
+}
+[17:33:50] + env GOCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gocache GOMODCACHE=/Users/gauravgs7/Documents/Projects/Forge/.gomodcache AEGIS_API_TOKEN=local-dev-token AEGIS_API_URL=http://127.0.0.1:8080 go run ./cli/cmd/aegis incident postmortem inc-20260516173350
+{"time":"2026-05-16T23:03:50.350801+05:30","level":"INFO","msg":"request","method":"GET","path":"/api/v1/incidents/inc-20260516173350/postmortem","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:51183"}
+# Incident Postmortem: payments-api
+
+## Summary
+payments-api experienced High error rate during canary after a recent canary rollout.
+
+## Impact
+Availability was 99.50% against a 99.90% SLO. p95 latency was 850ms against a 300ms target.
+
+## Detection
+Detected by HighErrorRate and converted into incident inc-20260516173350 by Aegis.
+
+## Timeline
+- 2026-05-16T17:23:50Z: payments-api rollout started with canary strategy
+- 2026-05-16T17:26:50Z: p95 latency increased to 850ms
+- 2026-05-16T17:28:50Z: error budget remaining 0.0%
+- 2026-05-16T17:33:50Z: HighErrorRate fired for payments-api
+- 2026-05-16T17:34:50Z: Aegis opened inc-20260516173350 and linked owner gaurav
+- 2026-05-16T17:35:50Z: rollback recommended because incident correlates with recent rollout
+
+
+## Likely Cause
+Recent deployment or configuration change correlated with SLO degradation.
+
+## Resolution
+Pause the rollout, roll back to the previous stable image, and verify error rate and p95 latency return below thresholds.
+
+## Action Items
+- Add regression coverage for the failed path.
+- Tighten canary analysis thresholds if this escaped early checks.
+- Verify runbook, dashboard, and alert annotations remain linked to this service.
+
+[17:33:50] + curl -fsS http://127.0.0.1:8080/metrics
+{"time":"2026-05-16T23:03:50.378358+05:30","level":"INFO","msg":"request","method":"GET","path":"/metrics","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:51184"}
+# HELP aegis_uptime_seconds Aegis API uptime in seconds.
+# TYPE aegis_uptime_seconds gauge
+aegis_uptime_seconds 129
+# HELP aegis_http_requests_total Total Aegis HTTP requests.
+# TYPE aegis_http_requests_total counter
+aegis_http_requests_total{method="GET",route="/readyz",status="200"} 1
+aegis_http_requests_total{method="POST",route="/api/v1/services",status="201"} 1
+aegis_http_requests_total{method="POST",route="/api/v1/services/{name}/health-gate",status="202"} 1
+aegis_http_requests_total{method="GET",route="/api/v1/services/{name}/readiness",status="200"} 1
+aegis_http_requests_total{method="GET",route="/api/v1/services/{name}/deployments",status="200"} 1
+aegis_http_requests_total{method="POST",route="/api/v1/incidents",status="201"} 1
+aegis_http_requests_total{method="GET",route="/api/v1/incidents/inc-20260516173350/postmortem",status="200"} 1
+aegis_http_requests_total{method="GET",route="/api/v1/services/{name}/slos",status="200"} 1
+aegis_http_requests_total{method="GET",route="/api/v1/incidents/inc-20260516173350/timeline",status="200"} 1
+[17:33:50] pipeline passed; evidence written to artifacts/local-ci-cd/20260516T173139Z

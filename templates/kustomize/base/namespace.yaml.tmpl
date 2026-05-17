@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Service.Namespace }}
+  labels:
+    sentinel.dev/team: {{ .Service.Team }}
+    sentinel.dev/environment: {{ .Service.Environment }}

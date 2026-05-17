@@ -1,0 +1,33 @@
+# Incident Runbook: {{ .Service.Name }}
+
+## Ownership
+
+- Team: {{ .Service.Team }}
+- Owner: {{ .Service.Owner }}
+- Namespace: {{ .Service.Namespace }}
+- Environment: {{ .Service.Environment }}
+
+## SLO
+
+- Availability target: {{ printf "%.2f" .Service.SLOTarget }}%
+- P99 latency objective: 300ms
+- Error-rate rollback threshold: 1%
+- Deployment strategy: {{ .Service.DeploymentStrategy }}
+
+## Triage
+
+1. Check the current rollout: `kubectl -n {{ .Service.Namespace }} rollout status deploy/{{ .Service.Name }}`
+2. Inspect recent events: `kubectl -n {{ .Service.Namespace }} get events --sort-by=.lastTimestamp`
+3. Check pod health: `kubectl -n {{ .Service.Namespace }} get pods -l app.kubernetes.io/name={{ .Service.Name }}`
+4. Compare p99 latency and error rate against the SLO dashboard.
+5. Check the latest image scan and deployment commit.
+
+## Rollback
+
+```bash
+curl -X POST http://sentinel-api/api/v1/services/{{ .Service.Name }}/rollback
+```
+
+## Escalation
+
+Page {{ .Service.Team }} if the SLO burn continues for more than 10 minutes or rollback fails.

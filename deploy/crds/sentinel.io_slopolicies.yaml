@@ -1,0 +1,23 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: slopolicies.sentinel.io
+spec:
+  group: sentinel.io
+  names:
+    kind: SLOPolicy
+    plural: slopolicies
+    singular: slopolicy
+    shortNames: ["slo"]
+  scope: Namespaced
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true

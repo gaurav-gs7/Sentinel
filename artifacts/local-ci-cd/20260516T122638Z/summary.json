@@ -1,0 +1,11 @@
+{
+  "status": "failed",
+  "detail": "pipeline failed near line 41",
+  "runId": "20260516T122638Z",
+  "service": "payments-api",
+  "environment": "staging",
+  "namespace": "platform",
+  "cluster": "aegis-local",
+  "image": "ghcr.io/example/payments-api:latest",
+  "artifacts": "artifacts/local-ci-cd/20260516T122638Z"
+}

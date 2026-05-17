@@ -1,0 +1,26 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .Service.Name }}-burn-rate
+  namespace: {{ .Service.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Service.Name }}
+    sentinel.dev/team: {{ .Service.Team }}
+spec:
+  groups:
+    - name: {{ .Service.Name }}.burnrate
+      rules:
+        - alert: {{ .PrometheusName }}_fast_burn_rate
+          expr: |
+            (
+              sum(rate(http_requests_total{service="{{ .Service.Name }}",status=~"5.."}[5m]))
+              /
+              sum(rate(http_requests_total{service="{{ .Service.Name }}"}[5m]))
+            ) > (14 * (1 - {{ .Service.SLOTarget }} / 100))
+          for: 5m
+          labels:
+            severity: page
+            team: {{ .Service.Team }}
+          annotations:
+            summary: "{{ .Service.Name }} is burning error budget quickly"
+            runbook_url: "runbooks/incident-runbook.md"

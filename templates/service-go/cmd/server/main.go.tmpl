@@ -1,0 +1,68 @@
+package main
+
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+	"os"
+	"time"
+)
+
+func main() {
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /readyz", func(w http.ResponseWriter, _ *http.Request) {
+		writeJSON(w, http.StatusOK, map[string]string{"status": "ready"})
+	})
+	mux.HandleFunc("GET /metrics", metrics)
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, _ *http.Request) {
+		writeJSON(w, http.StatusOK, map[string]string{"service": "{{ .Service.Name }}"})
+	})
+
+	addr := ":" + env("PORT", "8080")
+	server := &http.Server{
+		Addr:              addr,
+		Handler:           mux,
+		ReadHeaderTimeout: 5 * time.Second,
+	}
+	log.Printf("{{ .Service.Name }} listening on %s", addr)
+	log.Fatal(server.ListenAndServe())
+}
+
+func metrics(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "text/plain; version=0.0.4")
+	_, _ = w.Write([]byte(`# HELP http_requests_total Total HTTP requests.
+# TYPE http_requests_total counter
+http_requests_total{service="{{ .Service.Name }}",status="200"} 1
+# HELP http_request_duration_seconds HTTP request latency.
+# TYPE http_request_duration_seconds histogram
+http_request_duration_seconds_bucket{service="{{ .Service.Name }}",le="0.3"} 1
+http_request_duration_seconds_bucket{service="{{ .Service.Name }}",le="0.5"} 1
+http_request_duration_seconds_bucket{service="{{ .Service.Name }}",le="+Inf"} 1
+http_request_duration_seconds_sum{service="{{ .Service.Name }}"} 0.12
+http_request_duration_seconds_count{service="{{ .Service.Name }}"} 1
+# HELP db_query_duration_seconds Database query latency.
+# TYPE db_query_duration_seconds histogram
+db_query_duration_seconds_bucket{service="{{ .Service.Name }}",operation="read",le="0.05"} 1
+db_query_duration_seconds_bucket{service="{{ .Service.Name }}",operation="read",le="0.1"} 1
+db_query_duration_seconds_bucket{service="{{ .Service.Name }}",operation="read",le="+Inf"} 1
+db_query_duration_seconds_sum{service="{{ .Service.Name }}",operation="read"} 0.04
+db_query_duration_seconds_count{service="{{ .Service.Name }}",operation="read"} 1
+# HELP db_connections_active Active database connections.
+# TYPE db_connections_active gauge
+db_connections_active{service="{{ .Service.Name }}"} 2
+`))
+}
+
+func writeJSON(w http.ResponseWriter, status int, payload any) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func env(key, fallback string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		return fallback
+	}
+	return value
+}

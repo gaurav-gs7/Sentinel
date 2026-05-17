@@ -1,0 +1,13 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Service.Name }}
+  namespace: {{ .Service.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Service.Name }}
+    sentinel.dev/tier: {{ .Service.Tier }}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Service.Name }}

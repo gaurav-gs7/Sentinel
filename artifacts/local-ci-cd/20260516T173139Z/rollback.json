@@ -1,0 +1,8 @@
+{
+  "status": "rolled_back",
+  "service": "payments-api",
+  "namespace": "platform",
+  "fromImage": "ghcr.io/example/payments-api:20260516T173139Z-canary",
+  "toImage": "ghcr.io/example/payments-api:20260516T173139Z-stable",
+  "verifiedAt": "2026-05-16T17:33:49Z"
+}

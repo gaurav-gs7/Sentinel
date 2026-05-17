@@ -1,0 +1,26 @@
+apiVersion: sentinel.io/v1
+kind: SentinelService
+metadata:
+  name: {{ .Service.Name }}
+  namespace: {{ .Service.Namespace }}
+  labels:
+    sentinel.dev/tier: {{ .Service.Tier }}
+    sentinel.dev/team: {{ .Service.Team }}
+spec:
+  owner: {{ .Service.Owner }}
+  team: {{ .Service.Team }}
+  tier: {{ .Service.Tier }}
+  language: {{ .Service.Language }}
+  runtime: kubernetes
+  pager: {{ .Service.Pager }}
+  repository: {{ .Service.Repository }}
+  runbook: {{ .Service.RunbookURL }}
+  dashboard: {{ .Service.DashboardURL }}
+  deployment:
+    strategy: {{ .Service.DeploymentStrategy }}
+    maxErrorRate: {{ .Service.SLOErrorRate }}
+    rollbackOnFailure: {{ .Service.RollbackOnFailure }}
+  slo:
+    availability: {{ printf "%.2f" .Service.SLOTarget }}
+    latencyP95: {{ .Service.SLOLatencyP95Ms }}ms
+    errorRate: {{ .Service.SLOErrorRate }}

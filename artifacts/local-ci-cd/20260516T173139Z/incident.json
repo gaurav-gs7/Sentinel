@@ -1,0 +1,79 @@
+{
+  "events": [
+    {
+      "description": "payments-api rollout started with canary strategy",
+      "eventType": "deployment",
+      "timestamp": "2026-05-16T17:23:50.166314Z"
+    },
+    {
+      "description": "p95 latency increased to 850ms",
+      "eventType": "sli-degradation",
+      "timestamp": "2026-05-16T17:26:50.166314Z"
+    },
+    {
+      "description": "error budget remaining 0.0%",
+      "eventType": "slo-burn",
+      "timestamp": "2026-05-16T17:28:50.166314Z"
+    },
+    {
+      "description": "HighErrorRate fired for payments-api",
+      "eventType": "alert",
+      "timestamp": "2026-05-16T17:33:50.166314Z"
+    },
+    {
+      "description": "Aegis opened inc-20260516173350 and linked owner gaurav",
+      "eventType": "incident-created",
+      "timestamp": "2026-05-16T17:34:50.166314Z"
+    },
+    {
+      "description": "rollback recommended because incident correlates with recent rollout",
+      "eventType": "rollback-decision",
+      "timestamp": "2026-05-16T17:35:50.166314Z"
+    }
+  ],
+  "incident": {
+    "alertName": "HighErrorRate",
+    "createdAt": "2026-05-16T17:33:50.166314Z",
+    "id": "inc-20260516173350",
+    "service": "payments-api",
+    "serviceId": "7e1b38df-f207-4fc7-bcff-fb7c7ef6ef8e",
+    "severity": "critical",
+    "status": "active",
+    "title": "High error rate during canary"
+  },
+  "service": {
+    "createdAt": "2026-05-16T17:31:41.620997Z",
+    "dashboardUrl": "observability/dashboard.json",
+    "deploymentStrategy": "canary",
+    "environment": "staging",
+    "id": "7e1b38df-f207-4fc7-bcff-fb7c7ef6ef8e",
+    "language": "go",
+    "name": "payments-api",
+    "namespace": "platform",
+    "owner": "gaurav",
+    "pager": "payments-oncall",
+    "repository": "github.com/example/payments-api",
+    "rollbackOnFailure": true,
+    "runbookUrl": "runbooks/incident-runbook.md",
+    "sloErrorRate": 1,
+    "sloLatencyP95Ms": 300,
+    "sloTarget": 99.9,
+    "team": "platform",
+    "tier": "critical",
+    "updatedAt": "2026-05-16T17:31:41.620997Z"
+  },
+  "signals": {
+    "availabilityCurrent": 99.5,
+    "availabilityTarget": 99.9,
+    "burnRate": 4.2,
+    "deploymentGate": "blocked",
+    "errorBudgetRemainingPct": 0,
+    "errorRateCurrentPct": 8.2,
+    "errorRateThresholdPct": 1,
+    "evaluatedAt": "2026-05-16T17:33:50.166312Z",
+    "latencyP95CurrentMs": 850,
+    "latencyP95TargetMs": 300,
+    "reason": "error budget remaining 0.0% is below 10%",
+    "service": "payments-api"
+  }
+}

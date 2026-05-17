@@ -1,0 +1,33 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: sentinel-controller
+rules:
+  - apiGroups: ["sentinel.io"]
+    resources: ["rolloutguards"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["sentinel.io"]
+    resources: ["rolloutguards/status"]
+    verbs: ["get", "patch", "update"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: ["apps"]
+    resources: ["replicasets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sentinel-controller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: sentinel-controller
+subjects:
+  - kind: ServiceAccount
+    name: sentinel-controller
+    namespace: sentinel-system

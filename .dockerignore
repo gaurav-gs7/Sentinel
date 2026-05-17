@@ -1,0 +1,10 @@
+.git
+.gocache
+.gomodcache
+artifacts
+generated
+*.log
+api/.gocache
+api/.gomodcache
+cli/.gocache
+cli/.gomodcache

@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Service.Name }}-{{ .Service.Environment }}
+  namespace: argocd
+  labels:
+    sentinel.dev/service: {{ .Service.Name }}
+    sentinel.dev/team: {{ .Service.Team }}
+spec:
+  project: default
+  source:
+    repoURL: {{ if .Service.RepoURL }}{{ .Service.RepoURL }}{{ else }}https://github.com/example/{{ .Service.Name }}.git{{ end }}
+    targetRevision: main
+    path: k8s/overlays/{{ .Service.Environment }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ .Service.Namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

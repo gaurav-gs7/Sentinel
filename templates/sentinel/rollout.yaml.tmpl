@@ -1,0 +1,25 @@
+apiVersion: sentinel.io/v1
+kind: RolloutGuard
+metadata:
+  name: {{ .Service.Name }}-rollout
+  namespace: {{ .Service.Namespace }}
+spec:
+  serviceRef: {{ .Service.Name }}
+  strategy: {{ .Service.DeploymentStrategy }}
+  steps:
+    - weight: 10
+      duration: 2m
+    - weight: 25
+      duration: 5m
+    - weight: 50
+      duration: 5m
+    - weight: 100
+      duration: 0m
+  checks:
+    errorRateThreshold: {{ .Service.SLOErrorRate }}
+    latencyP95ThresholdMs: {{ .Service.SLOLatencyP95Ms }}
+    minAvailability: {{ printf "%.2f" .Service.SLOTarget }}
+    maxCpuSaturation: 80
+  rollback:
+    enabled: {{ .Service.RollbackOnFailure }}
+    consecutiveFailures: 2

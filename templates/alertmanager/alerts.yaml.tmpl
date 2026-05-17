@@ -1,0 +1,54 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .Service.Name }}-slo
+  namespace: {{ .Service.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Service.Name }}
+    sentinel.dev/team: {{ .Service.Team }}
+spec:
+  groups:
+    - name: {{ .Service.Name }}.slo
+      rules:
+        - alert: {{ .PrometheusName }}_high_error_rate
+          expr: |
+            sum(rate(http_requests_total{service="{{ .Service.Name }}",status=~"5.."}[5m]))
+            /
+            sum(rate(http_requests_total{service="{{ .Service.Name }}"}[5m])) * 100 > 1
+          for: 10m
+          labels:
+            severity: page
+            team: {{ .Service.Team }}
+          annotations:
+            summary: "{{ .Service.Name }} error rate is above threshold"
+            runbook_url: "runbooks/incident-runbook.md"
+        - alert: {{ .PrometheusName }}_high_p99_latency
+          expr: |
+            histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{service="{{ .Service.Name }}"}[5m])) by (le)) * 1000 > 300
+          for: 10m
+          labels:
+            severity: ticket
+            team: {{ .Service.Team }}
+          annotations:
+            summary: "{{ .Service.Name }} p99 latency is above 300ms"
+            runbook_url: "runbooks/incident-runbook.md"
+        - alert: {{ .PrometheusName }}_high_p95_latency
+          expr: |
+            histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{service="{{ .Service.Name }}"}[5m])) by (le)) * 1000 > 200
+          for: 10m
+          labels:
+            severity: ticket
+            team: {{ .Service.Team }}
+          annotations:
+            summary: "{{ .Service.Name }} p95 latency is above 200ms"
+            runbook_url: "runbooks/incident-runbook.md"
+        - alert: {{ .PrometheusName }}_high_database_latency
+          expr: |
+            histogram_quantile(0.95, sum(rate(db_query_duration_seconds_bucket{service="{{ .Service.Name }}"}[5m])) by (le, operation)) * 1000 > 100
+          for: 10m
+          labels:
+            severity: ticket
+            team: {{ .Service.Team }}
+          annotations:
+            summary: "{{ .Service.Name }} database p95 latency is above 100ms"
+            runbook_url: "runbooks/incident-runbook.md"

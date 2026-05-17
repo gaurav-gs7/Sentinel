@@ -1,0 +1,178 @@
+{
+  "incident": {
+    "events": [
+      {
+        "description": "payments-api rollout started with canary strategy",
+        "eventType": "deployment",
+        "timestamp": "2026-05-17T11:31:21.465337Z"
+      },
+      {
+        "description": "p95 latency increased to 850ms",
+        "eventType": "sli-degradation",
+        "timestamp": "2026-05-17T11:34:21.465337Z"
+      },
+      {
+        "description": "error budget remaining 0.0%",
+        "eventType": "slo-burn",
+        "timestamp": "2026-05-17T11:36:21.465337Z"
+      },
+      {
+        "description": "HighErrorRate fired for payments-api",
+        "eventType": "alert",
+        "timestamp": "2026-05-17T11:41:21.465337Z"
+      },
+      {
+        "description": "Aegis opened inc-20260517114121 and linked owner gaurav",
+        "eventType": "incident-created",
+        "timestamp": "2026-05-17T11:42:21.465337Z"
+      },
+      {
+        "description": "rollback recommended because incident correlates with recent rollout",
+        "eventType": "rollback-decision",
+        "timestamp": "2026-05-17T11:43:21.465337Z"
+      }
+    ],
+    "incident": {
+      "alertName": "HighErrorRate",
+      "createdAt": "2026-05-17T11:41:21.465337Z",
+      "id": "inc-20260517114121",
+      "service": "payments-api",
+      "serviceId": "9c53a528-876d-4134-af22-c03496042881",
+      "severity": "critical",
+      "status": "active",
+      "title": "High error rate during canary"
+    },
+    "service": {
+      "createdAt": "2026-05-17T11:38:25.979711Z",
+      "dashboardUrl": "observability/dashboard.json",
+      "deploymentStrategy": "canary",
+      "environment": "staging",
+      "id": "9c53a528-876d-4134-af22-c03496042881",
+      "language": "go",
+      "name": "payments-api",
+      "namespace": "platform",
+      "owner": "gaurav",
+      "pager": "payments-oncall",
+      "repository": "github.com/example/payments-api",
+      "rollbackOnFailure": true,
+      "runbookUrl": "runbooks/incident-runbook.md",
+      "sloErrorRate": 1,
+      "sloLatencyP95Ms": 300,
+      "sloTarget": 99.9,
+      "team": "platform",
+      "tier": "critical",
+      "updatedAt": "2026-05-17T11:38:25.979711Z"
+    },
+    "signals": {
+      "availabilityCurrent": 99.5,
+      "availabilityTarget": 99.9,
+      "burnRate": 4.2,
+      "deploymentGate": "blocked",
+      "errorBudgetRemainingPct": 0,
+      "errorRateCurrentPct": 8.2,
+      "errorRateThresholdPct": 1,
+      "evaluatedAt": "2026-05-17T11:41:21.465334Z",
+      "latencyP95CurrentMs": 850,
+      "latencyP95TargetMs": 300,
+      "reason": "error budget remaining 0.0% is below 10%",
+      "service": "payments-api"
+    }
+  },
+  "workflow": {
+    "attempt": 1,
+    "completedAt": "2026-05-17T11:41:21.465348Z",
+    "events": [
+      {
+        "message": "incident-enrichment workflow started",
+        "timestamp": "2026-05-17T11:41:21.46492Z",
+        "type": "workflow-started"
+      },
+      {
+        "message": "evaluate-alert-slo-impact",
+        "timestamp": "2026-05-17T11:41:21.464935Z",
+        "type": "step-started"
+      },
+      {
+        "message": "evaluate-alert-slo-impact",
+        "timestamp": "2026-05-17T11:41:21.465335Z",
+        "type": "step-succeeded"
+      },
+      {
+        "message": "correlate-alert-with-service-owner",
+        "timestamp": "2026-05-17T11:41:21.465335Z",
+        "type": "step-started"
+      },
+      {
+        "message": "correlate-alert-with-service-owner",
+        "timestamp": "2026-05-17T11:41:21.465337Z",
+        "type": "step-succeeded"
+      },
+      {
+        "message": "generate-rca-timeline",
+        "timestamp": "2026-05-17T11:41:21.465341Z",
+        "type": "step-started"
+      },
+      {
+        "message": "generate-rca-timeline",
+        "timestamp": "2026-05-17T11:41:21.465345Z",
+        "type": "step-succeeded"
+      },
+      {
+        "message": "persist-incident-record",
+        "timestamp": "2026-05-17T11:41:21.465345Z",
+        "type": "step-started"
+      },
+      {
+        "message": "persist-incident-record",
+        "timestamp": "2026-05-17T11:41:21.465347Z",
+        "type": "step-succeeded"
+      },
+      {
+        "message": "incident-enrichment workflow completed",
+        "timestamp": "2026-05-17T11:41:21.465348Z",
+        "type": "workflow-succeeded"
+      }
+    ],
+    "id": "wf-97da2f59-4e55-45c4-a8bd-2aa4734e3a56",
+    "kind": "aegis.incident.enrichment",
+    "maxAttempts": 1,
+    "name": "incident-enrichment",
+    "service": "payments-api",
+    "startedAt": "2026-05-17T11:41:21.46492Z",
+    "state": "succeeded",
+    "steps": [
+      {
+        "attempt": 1,
+        "completedAt": "2026-05-17T11:41:21.465335Z",
+        "maxAttempts": 1,
+        "name": "evaluate-alert-slo-impact",
+        "startedAt": "2026-05-17T11:41:21.464935Z",
+        "state": "succeeded"
+      },
+      {
+        "attempt": 1,
+        "completedAt": "2026-05-17T11:41:21.465337Z",
+        "maxAttempts": 1,
+        "name": "correlate-alert-with-service-owner",
+        "startedAt": "2026-05-17T11:41:21.465335Z",
+        "state": "succeeded"
+      },
+      {
+        "attempt": 1,
+        "completedAt": "2026-05-17T11:41:21.465345Z",
+        "maxAttempts": 1,
+        "name": "generate-rca-timeline",
+        "startedAt": "2026-05-17T11:41:21.465341Z",
+        "state": "succeeded"
+      },
+      {
+        "attempt": 1,
+        "completedAt": "2026-05-17T11:41:21.465347Z",
+        "maxAttempts": 1,
+        "name": "persist-incident-record",
+        "startedAt": "2026-05-17T11:41:21.465345Z",
+        "state": "succeeded"
+      }
+    ]
+  }
+}

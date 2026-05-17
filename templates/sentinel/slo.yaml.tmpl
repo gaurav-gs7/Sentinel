@@ -1,0 +1,23 @@
+apiVersion: sentinel.io/v1
+kind: SLOPolicy
+metadata:
+  name: {{ .Service.Name }}-slo
+  namespace: {{ .Service.Namespace }}
+spec:
+  serviceRef: {{ .Service.Name }}
+  window: 30d
+  objectives:
+    - name: availability
+      target: {{ printf "%.2f" .Service.SLOTarget }}
+      unit: percent
+      prometheusQuery: |
+        sum(rate(http_requests_total{service="{{ .Service.Name }}",status!~"5.."}[5m]))
+        /
+        sum(rate(http_requests_total{service="{{ .Service.Name }}"}[5m]))
+    - name: latency-p95
+      target: {{ .Service.SLOLatencyP95Ms }}
+      unit: ms
+      prometheusQuery: |
+        histogram_quantile(0.95,
+          sum(rate(http_request_duration_seconds_bucket{service="{{ .Service.Name }}"}[5m])) by (le)
+        ) * 1000
