@@ -3,6 +3,7 @@ package catalog
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"strings"
 	"time"
@@ -273,6 +274,24 @@ func (s *PostgresStore) GetWorkflowRun(ctx context.Context, id string) (models.W
 	return run, err
 }
 
+func (s *PostgresStore) GetWorkflowRunByIdempotencyKey(ctx context.Context, key string) (models.WorkflowRun, error) {
+	var id string
+	err := s.db.QueryRowContext(ctx, `
+		SELECT id
+		FROM workflow_runs
+		WHERE idempotency_key = $1
+		ORDER BY started_at DESC
+		LIMIT 1
+	`, key).Scan(&id)
+	if errors.Is(err, sql.ErrNoRows) {
+		return models.WorkflowRun{}, ErrNotFound
+	}
+	if err != nil {
+		return models.WorkflowRun{}, err
+	}
+	return s.loadWorkflowRun(ctx, id)
+}
+
 func (s *PostgresStore) ListWorkflowRuns(ctx context.Context) ([]models.WorkflowRun, error) {
 	rows, err := s.db.QueryContext(ctx, `
 		SELECT id
@@ -382,6 +401,105 @@ func (s *PostgresStore) loadWorkflowEvents(ctx context.Context, workflowID strin
 		events = append(events, event)
 	}
 	return events, rows.Err()
+}
+
+func (s *PostgresStore) SaveIncidentRecord(ctx context.Context, record models.IncidentRecord) error {
+	incidentJSON, err := json.Marshal(record.Incident)
+	if err != nil {
+		return err
+	}
+	serviceJSON, err := json.Marshal(record.Service)
+	if err != nil {
+		return err
+	}
+	signalsJSON, err := json.Marshal(record.Signals)
+	if err != nil {
+		return err
+	}
+	eventsJSON, err := json.Marshal(record.Events)
+	if err != nil {
+		return err
+	}
+	_, err = s.db.ExecContext(ctx, `
+		INSERT INTO incident_records (
+			id, service_id, service_name, incident, service, signals, events, created_at, updated_at
+		)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,now())
+		ON CONFLICT (id) DO UPDATE SET
+			service_id = EXCLUDED.service_id,
+			service_name = EXCLUDED.service_name,
+			incident = EXCLUDED.incident,
+			service = EXCLUDED.service,
+			signals = EXCLUDED.signals,
+			events = EXCLUDED.events,
+			updated_at = now()
+	`, record.Incident.ID, record.Service.ID, record.Service.Name, incidentJSON, serviceJSON, signalsJSON,
+		eventsJSON, record.Incident.CreatedAt)
+	return err
+}
+
+func (s *PostgresStore) GetIncidentRecord(ctx context.Context, id string) (models.IncidentRecord, error) {
+	record, err := s.loadIncidentRecord(ctx, `
+		SELECT incident, service, signals, events
+		FROM incident_records
+		WHERE id = $1
+	`, id)
+	if errors.Is(err, sql.ErrNoRows) {
+		return models.IncidentRecord{}, ErrNotFound
+	}
+	return record, err
+}
+
+func (s *PostgresStore) ListIncidentRecords(ctx context.Context) ([]models.IncidentRecord, error) {
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT incident, service, signals, events
+		FROM incident_records
+		ORDER BY created_at DESC
+		LIMIT 100
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var records []models.IncidentRecord
+	for rows.Next() {
+		record, err := scanIncidentRecord(rows)
+		if err != nil {
+			return nil, err
+		}
+		records = append(records, record)
+	}
+	return records, rows.Err()
+}
+
+type incidentScanner interface {
+	Scan(dest ...any) error
+}
+
+func (s *PostgresStore) loadIncidentRecord(ctx context.Context, query string, args ...any) (models.IncidentRecord, error) {
+	return scanIncidentRecord(s.db.QueryRowContext(ctx, query, args...))
+}
+
+func scanIncidentRecord(scanner incidentScanner) (models.IncidentRecord, error) {
+	var record models.IncidentRecord
+	var incidentJSON, serviceJSON, signalsJSON, eventsJSON []byte
+	if err := scanner.Scan(&incidentJSON, &serviceJSON, &signalsJSON, &eventsJSON); err != nil {
+		return models.IncidentRecord{}, err
+	}
+	if err := json.Unmarshal(incidentJSON, &record.Incident); err != nil {
+		return models.IncidentRecord{}, err
+	}
+	if err := json.Unmarshal(serviceJSON, &record.Service); err != nil {
+		return models.IncidentRecord{}, err
+	}
+	if err := json.Unmarshal(signalsJSON, &record.Signals); err != nil {
+		return models.IncidentRecord{}, err
+	}
+	if err := json.Unmarshal(eventsJSON, &record.Events); err != nil {
+		return models.IncidentRecord{}, err
+	}
+	return record, nil
 }
 
 func timePtr(t time.Time) *time.Time {
@@ -513,6 +631,23 @@ CREATE INDEX IF NOT EXISTS idx_deployments_service_started
     ON deployments(service_id, started_at DESC);
 CREATE INDEX IF NOT EXISTS idx_workflow_runs_service_started
     ON workflow_runs(service, started_at DESC);
+CREATE INDEX IF NOT EXISTS idx_workflow_runs_idempotency_key
+    ON workflow_runs(idempotency_key)
+    WHERE idempotency_key <> '';
+
+CREATE TABLE IF NOT EXISTS incident_records (
+    id TEXT PRIMARY KEY,
+    service_id UUID NOT NULL REFERENCES services(id) ON DELETE CASCADE,
+    service_name TEXT NOT NULL,
+    incident JSONB NOT NULL,
+    service JSONB NOT NULL,
+    signals JSONB NOT NULL,
+    events JSONB NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_incident_records_service_created
+    ON incident_records(service_name, created_at DESC);
 `
 
 func encodeList(values []string) string {

@@ -2,7 +2,9 @@ package httpapi
 
 import (
 	"context"
+	"crypto/sha256"
 	"crypto/subtle"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -17,6 +19,7 @@ import (
 	"github.com/gauravgs7/sentinel/api/internal/catalog"
 	"github.com/gauravgs7/sentinel/api/internal/incidents"
 	"github.com/gauravgs7/sentinel/api/internal/models"
+	promclient "github.com/gauravgs7/sentinel/api/internal/prometheus"
 	"github.com/gauravgs7/sentinel/api/internal/readiness"
 	"github.com/gauravgs7/sentinel/api/internal/reliability"
 	"github.com/gauravgs7/sentinel/api/internal/security"
@@ -33,8 +36,6 @@ type Server struct {
 	prometheusURL string
 	startedAt     time.Time
 	metrics       *serverMetrics
-	incidentMu    sync.RWMutex
-	incidents     map[string]models.IncidentRecord
 	workflows     *workflows.Engine
 }
 
@@ -67,7 +68,6 @@ func NewServer(store catalog.Store, generator *templates.Generator, opts ...Opti
 		maxBodyBytes: 1 << 20,
 		startedAt:    time.Now().UTC(),
 		metrics:      newServerMetrics(),
-		incidents:    make(map[string]models.IncidentRecord),
 		workflows:    workflows.NewEngine(store),
 	}
 	for _, opt := range opts {
@@ -143,9 +143,10 @@ func (s *Server) createService(w http.ResponseWriter, r *http.Request) {
 	var generated templates.Result
 	idempotent := false
 	run := s.workflows.Run(r.Context(), workflows.Spec{
-		Name:    "service-onboarding",
-		Kind:    "sentinel.service.onboarding",
-		Service: service.Name,
+		Name:           "service-onboarding",
+		Kind:           "sentinel.service.onboarding",
+		Service:        service.Name,
+		IdempotencyKey: serviceOnboardingKey(service),
 		Steps: []workflows.Step{
 			{
 				Name:        "persist-service-metadata",
@@ -207,6 +208,19 @@ func (s *Server) createService(w http.ResponseWriter, r *http.Request) {
 		}
 		writeJSON(w, http.StatusInternalServerError, map[string]any{"error": run.Error, "workflow": run})
 		return
+	}
+	if created.ID == "" {
+		created, err = s.store.GetServiceByName(r.Context(), service.Name)
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		generated, err = s.generator.Generate(created)
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		idempotent = true
 	}
 
 	status := http.StatusCreated
@@ -340,28 +354,16 @@ func (s *Server) slos(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) evaluateSLO(ctx context.Context, service models.Service) models.SLOStatus {
-	status := sloengine.Evaluate(service, sloengine.DefaultSignals(service))
 	if s.prometheusURL == "" {
-		return status
+		return sloengine.Evaluate(service, sloengine.DefaultSignals(service))
 	}
 	checkCtx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
-	req, err := http.NewRequestWithContext(checkCtx, http.MethodGet, s.prometheusURL+"/-/ready", nil)
+	signals, err := promclient.NewClient(s.prometheusURL).Signals(checkCtx, service)
+	status := sloengine.Evaluate(service, signals)
 	if err != nil {
 		status.DeploymentGate = "blocked"
-		status.Reason = "Prometheus unavailable; deployment gate fails closed"
-		return status
-	}
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		status.DeploymentGate = "blocked"
-		status.Reason = "Prometheus unavailable; deployment gate fails closed"
-		return status
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		status.DeploymentGate = "blocked"
-		status.Reason = fmt.Sprintf("Prometheus unavailable; readiness returned %s and deployment gate fails closed", resp.Status)
+		status.Reason = fmt.Sprintf("Prometheus unavailable or query failed: %v; deployment gate fails closed", err)
 	}
 	return status
 }
@@ -409,7 +411,7 @@ func (s *Server) startRollout(w http.ResponseWriter, r *http.Request) {
 				Name:        "evaluate-slo-deployment-gate",
 				MaxAttempts: 1,
 				Run: func(context.Context) error {
-					gate = sloengine.Evaluate(service, sloengine.DefaultSignals(service))
+					gate = s.evaluateSLO(r.Context(), service)
 					if strings.EqualFold(gate.DeploymentGate, "blocked") {
 						return errors.New(gate.Reason)
 					}
@@ -668,7 +670,7 @@ func (s *Server) createIncident(w http.ResponseWriter, r *http.Request) {
 				MaxAttempts: 1,
 				Run: func(context.Context) error {
 					incident = models.Incident{
-						ID:        "inc-" + time.Now().UTC().Format("20060102150405"),
+						ID:        "inc-" + catalog.NewID(),
 						ServiceID: service.ID,
 						Service:   service.Name,
 						Severity:  strings.ToLower(req.Severity),
@@ -697,11 +699,8 @@ func (s *Server) createIncident(w http.ResponseWriter, r *http.Request) {
 			{
 				Name:        "persist-incident-record",
 				MaxAttempts: 1,
-				Run: func(context.Context) error {
-					s.incidentMu.Lock()
-					defer s.incidentMu.Unlock()
-					s.incidents[incident.ID] = record
-					return nil
+				Run: func(ctx context.Context) error {
+					return s.store.SaveIncidentRecord(ctx, record)
 				},
 			},
 		},
@@ -714,12 +713,11 @@ func (s *Server) createIncident(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, map[string]any{"incident": record, "workflow": run})
 }
 
-func (s *Server) listIncidents(w http.ResponseWriter, _ *http.Request) {
-	s.incidentMu.RLock()
-	defer s.incidentMu.RUnlock()
-	records := make([]models.IncidentRecord, 0, len(s.incidents))
-	for _, record := range s.incidents {
-		records = append(records, record)
+func (s *Server) listIncidents(w http.ResponseWriter, r *http.Request) {
+	records, err := s.store.ListIncidentRecords(r.Context())
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"incidents": records})
 }
@@ -735,22 +733,20 @@ func (s *Server) getIncident(w http.ResponseWriter, r *http.Request) {
 func (s *Server) resolveIncident(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	var record models.IncidentRecord
-	found := false
+	missing := false
 	run := s.workflows.Run(r.Context(), workflows.Spec{
 		Name: "incident-resolve",
 		Kind: "sentinel.incident.resolve",
 		Steps: []workflows.Step{{
 			Name:        "mark-incident-resolved",
 			MaxAttempts: 1,
-			Run: func(context.Context) error {
-				s.incidentMu.Lock()
-				defer s.incidentMu.Unlock()
-				var ok bool
-				record, ok = s.incidents[id]
-				if !ok {
-					return catalog.ErrNotFound
+			Run: func(ctx context.Context) error {
+				var err error
+				record, err = s.store.GetIncidentRecord(ctx, id)
+				if err != nil {
+					missing = errors.Is(err, catalog.ErrNotFound)
+					return err
 				}
-				found = true
 				now := time.Now().UTC()
 				record.Incident.Status = "resolved"
 				record.Incident.ResolvedAt = &now
@@ -759,12 +755,11 @@ func (s *Server) resolveIncident(w http.ResponseWriter, r *http.Request) {
 					EventType:   "resolved",
 					Description: "incident resolved after rollback and SLO recovery checks",
 				})
-				s.incidents[id] = record
-				return nil
+				return s.store.SaveIncidentRecord(ctx, record)
 			},
 		}},
 	})
-	if !found {
+	if missing {
 		writeError(w, http.StatusNotFound, "incident not found")
 		return
 	}
@@ -865,11 +860,13 @@ func (s *Server) loadService(w http.ResponseWriter, r *http.Request) (models.Ser
 }
 
 func (s *Server) loadIncident(w http.ResponseWriter, r *http.Request) (models.IncidentRecord, bool) {
-	s.incidentMu.RLock()
-	defer s.incidentMu.RUnlock()
-	record, ok := s.incidents[r.PathValue("id")]
-	if !ok {
+	record, err := s.store.GetIncidentRecord(r.Context(), r.PathValue("id"))
+	if errors.Is(err, catalog.ErrNotFound) {
 		writeError(w, http.StatusNotFound, "incident not found")
+		return models.IncidentRecord{}, false
+	}
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
 		return models.IncidentRecord{}, false
 	}
 	return record, true
@@ -981,6 +978,50 @@ func sameServiceSpec(a, b models.Service) bool {
 		a.SLOErrorRate == b.SLOErrorRate &&
 		a.DeploymentStrategy == b.DeploymentStrategy &&
 		a.RollbackOnFailure == b.RollbackOnFailure
+}
+
+func serviceOnboardingKey(service models.Service) string {
+	payload, _ := json.Marshal(struct {
+		Name               string
+		Team               string
+		Owner              string
+		Tier               string
+		Language           string
+		RepoURL            string
+		Repository         string
+		Pager              string
+		RunbookURL         string
+		DashboardURL       string
+		Dependencies       []string
+		Namespace          string
+		Environment        string
+		SLOTarget          float64
+		SLOLatencyP95Ms    int
+		SLOErrorRate       float64
+		DeploymentStrategy string
+		RollbackOnFailure  bool
+	}{
+		Name:               service.Name,
+		Team:               service.Team,
+		Owner:              service.Owner,
+		Tier:               service.Tier,
+		Language:           service.Language,
+		RepoURL:            service.RepoURL,
+		Repository:         service.Repository,
+		Pager:              service.Pager,
+		RunbookURL:         service.RunbookURL,
+		DashboardURL:       service.DashboardURL,
+		Dependencies:       service.Dependencies,
+		Namespace:          service.Namespace,
+		Environment:        service.Environment,
+		SLOTarget:          service.SLOTarget,
+		SLOLatencyP95Ms:    service.SLOLatencyP95Ms,
+		SLOErrorRate:       service.SLOErrorRate,
+		DeploymentStrategy: service.DeploymentStrategy,
+		RollbackOnFailure:  service.RollbackOnFailure,
+	})
+	sum := sha256.Sum256(payload)
+	return "service-onboarding:" + service.Name + ":" + hex.EncodeToString(sum[:8])
 }
 
 func parseMillis(value string) (int, error) {

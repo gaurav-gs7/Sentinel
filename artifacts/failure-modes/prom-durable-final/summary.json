@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "detail": "all failure-mode scenarios passed",
+  "runId": "codex-prom-durable-final",
+  "service": "failure-api",
+  "artifacts": "artifacts/failure-modes/codex-prom-durable-final"
+}

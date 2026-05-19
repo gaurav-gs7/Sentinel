@@ -37,6 +37,7 @@ Observability plane:
 - Prometheus scrape annotations
 - ServiceMonitor template
 - PrometheusRule and burn-rate alert templates
+- Prometheus query-backed SLO evaluation for request rate, 5xx error rate, and p95 latency
 - Grafana dashboard JSON
 - OpenTelemetry Collector and Jaeger templates
 - App metrics for request rate, error rate, p95/p99 latency, and database latency
@@ -54,7 +55,7 @@ Observability plane:
 9. Local CI/CD runner builds images, deploys stable and canary revisions to kind, and verifies runtime health.
 10. Health gate runs as a workflow that evaluates canary latency/error signals and records rollback intent if the policy breaches.
 11. If the gate fails, the runner executes `kubectl rollout undo`.
-12. Incident ingestion runs as a workflow that evaluates SLO impact, enriches service ownership, generates a timeline, and stores the incident record.
+12. Incident ingestion runs as a workflow that evaluates SLO impact, enriches service ownership, generates a timeline, and stores the incident record durably.
 
 ## Controller Reconciliation
 
@@ -77,6 +78,16 @@ Sentinel does not run a second standalone control plane next to Helios. Instead,
 - `sentinel.rollout.health-gate`: evaluates canary metrics and records rollback intent on breach.
 - `sentinel.rollout.rollback`: records rollback intent for GitOps/Kubernetes execution.
 - `sentinel.incident.enrichment`: correlates alerts with service metadata, SLO impact, RCA timeline, and postmortem context.
+
+## Durable State
+
+With PostgreSQL enabled, Sentinel persists:
+
+- service catalog and deployment history
+- workflow runs, steps, events, and idempotency keys
+- incident records, enriched SLO signals, and RCA timeline events
+
+Workflow idempotency lookup is durable, so repeated operations with the same idempotency key can be recognized after an API restart. Service onboarding uses a deterministic key derived from the normalized service spec.
 
 ## Local-First Production Design
 

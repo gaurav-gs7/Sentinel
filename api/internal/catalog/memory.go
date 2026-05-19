@@ -14,6 +14,7 @@ type MemoryStore struct {
 	services    map[string]models.Service
 	deployments map[string][]models.Deployment
 	workflows   map[string]models.WorkflowRun
+	incidents   map[string]models.IncidentRecord
 }
 
 func NewMemoryStore() *MemoryStore {
@@ -21,6 +22,7 @@ func NewMemoryStore() *MemoryStore {
 		services:    make(map[string]models.Service),
 		deployments: make(map[string][]models.Deployment),
 		workflows:   make(map[string]models.WorkflowRun),
+		incidents:   make(map[string]models.IncidentRecord),
 	}
 }
 
@@ -119,6 +121,17 @@ func (s *MemoryStore) GetWorkflowRun(_ context.Context, id string) (models.Workf
 	return run, nil
 }
 
+func (s *MemoryStore) GetWorkflowRunByIdempotencyKey(_ context.Context, key string) (models.WorkflowRun, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	for _, run := range s.workflows {
+		if run.IdempotencyKey == key {
+			return run, nil
+		}
+	}
+	return models.WorkflowRun{}, ErrNotFound
+}
+
 func (s *MemoryStore) ListWorkflowRuns(_ context.Context) ([]models.WorkflowRun, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -130,4 +143,34 @@ func (s *MemoryStore) ListWorkflowRuns(_ context.Context) ([]models.WorkflowRun,
 		return runs[i].StartedAt.After(runs[j].StartedAt)
 	})
 	return runs, nil
+}
+
+func (s *MemoryStore) SaveIncidentRecord(_ context.Context, record models.IncidentRecord) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.incidents[record.Incident.ID] = record
+	return nil
+}
+
+func (s *MemoryStore) GetIncidentRecord(_ context.Context, id string) (models.IncidentRecord, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	record, ok := s.incidents[id]
+	if !ok {
+		return models.IncidentRecord{}, ErrNotFound
+	}
+	return record, nil
+}
+
+func (s *MemoryStore) ListIncidentRecords(_ context.Context) ([]models.IncidentRecord, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	records := make([]models.IncidentRecord, 0, len(s.incidents))
+	for _, record := range s.incidents {
+		records = append(records, record)
+	}
+	sort.Slice(records, func(i, j int) bool {
+		return records[i].Incident.CreatedAt.After(records[j].Incident.CreatedAt)
+	})
+	return records, nil
 }

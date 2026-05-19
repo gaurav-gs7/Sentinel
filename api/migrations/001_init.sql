@@ -131,3 +131,20 @@ CREATE INDEX IF NOT EXISTS idx_deployments_service_started
     ON deployments(service_id, started_at DESC);
 CREATE INDEX IF NOT EXISTS idx_workflow_runs_service_started
     ON workflow_runs(service, started_at DESC);
+CREATE INDEX IF NOT EXISTS idx_workflow_runs_idempotency_key
+    ON workflow_runs(idempotency_key)
+    WHERE idempotency_key <> '';
+
+CREATE TABLE IF NOT EXISTS incident_records (
+    id TEXT PRIMARY KEY,
+    service_id UUID NOT NULL REFERENCES services(id) ON DELETE CASCADE,
+    service_name TEXT NOT NULL,
+    incident JSONB NOT NULL,
+    service JSONB NOT NULL,
+    signals JSONB NOT NULL,
+    events JSONB NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_incident_records_service_created
+    ON incident_records(service_name, created_at DESC);

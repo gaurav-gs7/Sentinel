@@ -1,0 +1,7 @@
+{"scenario":"postgresql-unavailable-fails-predictably","status":"passed","evidence":"artifacts/failure-modes/codex-prom-durable/postgres-unavailable.log"}
+{"scenario":"invalid-service-metadata-rejected","status":"passed","evidence":"artifacts/failure-modes/codex-prom-durable/invalid-service-metadata.json"}
+{"scenario":"duplicate-onboarding-idempotent","status":"passed","evidence":"artifacts/failure-modes/codex-prom-durable/onboard-duplicate.json"}
+{"scenario":"low-traffic-waits-for-more-samples","status":"passed","evidence":"artifacts/failure-modes/codex-prom-durable/low-traffic-health-gate.json"}
+{"scenario":"bad-canary-rolls-back","status":"passed","evidence":"artifacts/failure-modes/codex-prom-durable/bad-canary-health-gate.json"}
+{"scenario":"rollback-evidence-recorded","status":"passed","evidence":"artifacts/failure-modes/codex-prom-durable/rollback-evidence.json"}
+{"scenario":"prometheus-unavailable-fails-closed","status":"passed","evidence":"artifacts/failure-modes/codex-prom-durable/prometheus-unavailable-slo.json"}

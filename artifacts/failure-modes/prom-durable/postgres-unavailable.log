@@ -1,0 +1,2 @@
+2026/05/18 12:57:07 open catalog store: failed to connect to `user=sentinel database=sentinel`: 127.0.0.1:1 (127.0.0.1): dial error: dial tcp 127.0.0.1:1: connect: connection refused
+exit status 1

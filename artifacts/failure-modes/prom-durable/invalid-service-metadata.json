@@ -1,0 +1,1 @@
+{"error":"policy validation failed","findings":[{"policy":"service-name","message":"service name must be a valid Kubernetes DNS label"},{"policy":"language","message":"supported languages are go and python"},{"policy":"environment","message":"environment must be dev, staging, or prod"}]}

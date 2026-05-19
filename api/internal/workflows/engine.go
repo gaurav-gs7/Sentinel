@@ -39,6 +39,7 @@ type Spec struct {
 type Store interface {
 	SaveWorkflowRun(context.Context, models.WorkflowRun) error
 	GetWorkflowRun(context.Context, string) (models.WorkflowRun, error)
+	GetWorkflowRunByIdempotencyKey(context.Context, string) (models.WorkflowRun, error)
 	ListWorkflowRuns(context.Context) ([]models.WorkflowRun, error)
 }
 
@@ -185,13 +186,25 @@ func (e *Engine) Get(id string) (models.WorkflowRun, bool) {
 
 func (e *Engine) GetByIdempotencyKey(key string) (models.WorkflowRun, bool) {
 	e.mu.RLock()
-	defer e.mu.RUnlock()
 	id, ok := e.byKey[key]
-	if !ok {
+	if ok {
+		run, ok := e.runs[id]
+		e.mu.RUnlock()
+		if ok {
+			return run, true
+		}
+	} else {
+		e.mu.RUnlock()
+	}
+	if e.store == nil {
 		return models.WorkflowRun{}, false
 	}
-	run, ok := e.runs[id]
-	return run, ok
+	run, err := e.store.GetWorkflowRunByIdempotencyKey(context.Background(), key)
+	if err != nil {
+		return models.WorkflowRun{}, false
+	}
+	e.cache(run)
+	return run, true
 }
 
 func (e *Engine) List() []models.WorkflowRun {

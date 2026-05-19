@@ -1,0 +1,18 @@
+[04:35:46] starting failure-mode demo; artifacts will be written to artifacts/failure-modes/codex-prom-durable-final
+[04:35:46] proving PostgreSQL unavailable fails predictably during startup
+[04:35:52] starting Sentinel API with unavailable Prometheus URL to prove fail-closed SLO behavior
+2026/05/19 10:05:52 sentinel api listening on 127.0.0.1:18081
+{"time":"2026-05-19T10:05:53.386937+05:30","level":"INFO","msg":"request","method":"GET","path":"/readyz","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:58587"}
+[04:35:53] proving invalid service metadata is rejected
+{"time":"2026-05-19T10:05:53.39902+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services","status":422,"duration_ms":0,"remote_addr":"127.0.0.1:58588"}
+[04:35:53] proving duplicate onboarding is idempotent
+{"time":"2026-05-19T10:05:53.421261+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services","status":201,"duration_ms":9,"remote_addr":"127.0.0.1:58589"}
+{"time":"2026-05-19T10:05:53.432938+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services","status":200,"duration_ms":3,"remote_addr":"127.0.0.1:58590"}
+[04:35:53] proving low traffic waits for more samples instead of rolling back
+{"time":"2026-05-19T10:05:53.446673+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services/failure-api/health-gate","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:58591"}
+[04:35:53] proving a bad canary records rollback intent
+{"time":"2026-05-19T10:05:53.463927+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services/failure-api/health-gate","status":202,"duration_ms":0,"remote_addr":"127.0.0.1:58592"}
+{"time":"2026-05-19T10:05:53.47641+05:30","level":"INFO","msg":"request","method":"GET","path":"/api/v1/services/failure-api/deployments","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:58593"}
+[04:35:53] proving Prometheus unavailable causes safe degraded fail-closed behavior
+{"time":"2026-05-19T10:05:53.502118+05:30","level":"INFO","msg":"request","method":"GET","path":"/api/v1/services/failure-api/slos","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:58594"}
+[04:35:53] failure-mode demo passed; evidence written to artifacts/failure-modes/codex-prom-durable-final

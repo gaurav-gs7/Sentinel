@@ -9,11 +9,11 @@ It keeps the useful Harbor-style golden path for service onboarding, but the pro
 - Registers services with owner, tier, pager, repository, runbook, dashboard, SLO, deployment strategy, and rollback policy metadata.
 - Generates production-ready service scaffolds with Kubernetes manifests, GitHub Actions, Kustomize overlays, Terraform, Argo CD, Grafana, Alertmanager, OpenTelemetry, Jaeger, SLO policy, rollout guard, and runbook files.
 - Scores services for production readiness.
-- Evaluates SLO/error-budget status and deployment eligibility.
+- Evaluates SLO/error-budget status and deployment eligibility from real Prometheus instant queries when `SENTINEL_PROMETHEUS_URL` is configured.
 - Gates canary rollouts with latency and error-rate health checks.
 - Reconciles `RolloutGuard` resources with a Kubernetes controller that updates status, emits Events, and restores the previous ReplicaSet template when guarded rollouts are blocked.
 - Records automated rollback decisions through workflow-backed rollout steps.
-- Converts simulated Alertmanager signals into incidents with enriched SLO state, timeline, and postmortem draft.
+- Converts simulated Alertmanager signals into durable incidents with enriched SLO state, timeline, and postmortem draft.
 - Exposes workflow runs, steps, retry state, and audit-style events for onboarding, readiness, SLO checks, rollouts, rollback, and incidents.
 - Runs locally on a MacBook with Go, Docker, kind, kubectl, and optional Trivy.
 
@@ -181,6 +181,18 @@ docker compose up --build
 
 Without `DATABASE_URL`, Sentinel uses an in-memory store for fast laptop-local development. With `DATABASE_URL`, Sentinel persists the service catalog, deployments, reliability metadata, and workflow run tables in PostgreSQL.
 
+PostgreSQL mode also persists incident records and workflow idempotency lookup state, so repeated onboarding operations can be recognized across API restarts.
+
+## Prometheus SLO Queries
+
+Set `SENTINEL_PROMETHEUS_URL` to evaluate SLO state from Prometheus:
+
+```bash
+SENTINEL_PROMETHEUS_URL=http://prometheus.monitoring.svc:9090 make run-api
+```
+
+Sentinel queries request rate, 5xx rate, and p95 latency from generated service metrics. If Prometheus is configured but unavailable or a query fails, the deployment gate fails closed as `blocked`.
+
 ## Repository Layout
 
 ```text
@@ -201,5 +213,5 @@ Sentinel — Kubernetes Reliability Platform with Helios-Style Workflow Orchestr
 - Built a Go-based Kubernetes reliability platform that standardized service onboarding using CRDs, CLI workflows, GitOps templates, SLO policies, runbooks, dashboards, and production-readiness checks.
 - Integrated a Helios-style workflow engine for onboarding, SLO checks, rollout gates, rollback decisions, incident enrichment, ordered execution steps, retry metadata, and audit events.
 - Implemented a production-readiness engine that validates ownership, tier, pager, SLOs, rollout policy, rollback readiness, generated Kubernetes guardrails, observability defaults, and runbook coverage.
-- Developed SLO/error-budget tracking to evaluate availability, p95 latency, error rate, burn rate, and deployment eligibility for Kubernetes services.
-- Integrated local GitHub Actions-style CI/CD, Kustomize, kind, Prometheus/Grafana templates, Alertmanager-style incident ingestion, automated rollback evidence, and RCA timeline/postmortem generation.
+- Developed Prometheus-backed SLO/error-budget tracking to evaluate availability, p95 latency, error rate, burn rate, and deployment eligibility for Kubernetes services.
+- Integrated local GitHub Actions-style CI/CD, Kustomize, kind, Prometheus/Grafana templates, durable incident ingestion, automated rollback evidence, and RCA timeline/postmortem generation.
