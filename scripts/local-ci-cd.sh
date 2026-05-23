@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT_DIR"
+
 SERVICE_NAME="${SERVICE_NAME:-payments-api}"
 SERVICE_LANGUAGE="${SERVICE_LANGUAGE:-go}"
 SERVICE_TEAM="${SERVICE_TEAM:-platform}"
@@ -31,8 +34,8 @@ CANARY_IMAGE_NAME="${CANARY_IMAGE_NAME:-$IMAGE_REPOSITORY:$CANARY_IMAGE_TAG}"
 IMAGE_NAME="${IMAGE_NAME:-$CANARY_IMAGE_NAME}"
 
 export SENTINEL_API_TOKEN SENTINEL_API_URL SENTINEL_ADDR
-export GOCACHE="${GOCACHE:-$(pwd)/.gocache}"
-export GOMODCACHE="${GOMODCACHE:-$(pwd)/.gomodcache}"
+export GOCACHE="${GOCACHE:-$ROOT_DIR/.gocache}"
+export GOMODCACHE="${GOMODCACHE:-$ROOT_DIR/.gomodcache}"
 
 run_dir="$ARTIFACT_ROOT/$RUN_ID"
 log_file="$run_dir/pipeline.log"

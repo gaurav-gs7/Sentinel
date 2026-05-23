@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT_DIR"
+
 SERVICE_NAME="${SERVICE_NAME:-failure-api}"
 SENTINEL_API_TOKEN="${SENTINEL_API_TOKEN:-local-dev-token}"
 SENTINEL_PORT="${SENTINEL_PORT:-18081}"
@@ -10,8 +13,8 @@ ARTIFACT_ROOT="${ARTIFACT_ROOT:-artifacts/failure-modes}"
 RUN_ID="${RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)}"
 PROMETHEUS_UNAVAILABLE_URL="${PROMETHEUS_UNAVAILABLE_URL:-http://127.0.0.1:1}"
 
-export GOCACHE="${GOCACHE:-$(pwd)/.gocache}"
-export GOMODCACHE="${GOMODCACHE:-$(pwd)/.gomodcache}"
+export GOCACHE="${GOCACHE:-$ROOT_DIR/.gocache}"
+export GOMODCACHE="${GOMODCACHE:-$ROOT_DIR/.gomodcache}"
 
 run_dir="$ARTIFACT_ROOT/$RUN_ID"
 log_file="$run_dir/failure-mode-demo.log"

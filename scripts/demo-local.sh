@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT_DIR"
+
 export SENTINEL_API_TOKEN="${SENTINEL_API_TOKEN:-local-dev-token}"
 export SENTINEL_ADDR="${SENTINEL_ADDR:-127.0.0.1:8080}"
 export SENTINEL_API_URL="${SENTINEL_API_URL:-http://127.0.0.1:8080}"
-export GOCACHE="${GOCACHE:-$(pwd)/.gocache}"
-export GOMODCACHE="${GOMODCACHE:-$(pwd)/.gomodcache}"
+export GOCACHE="${GOCACHE:-$ROOT_DIR/.gocache}"
+export GOMODCACHE="${GOMODCACHE:-$ROOT_DIR/.gomodcache}"
 
 go run ./api/cmd/sentinel-api &
 api_pid=$!
