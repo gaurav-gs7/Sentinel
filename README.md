@@ -206,3 +206,8 @@ scripts/      Local demo and CI/CD runner
 docs/         Architecture and operator documentation
 ```
 
+## License
+
+Sentinel is licensed under the Apache License 2.0. You may use, modify, distribute, and sublicense the project under the license terms, with attribution and preservation of copyright/license notices.
+
+The license also includes an express patent grant from contributors and is provided on an "AS IS" basis without warranties. See [LICENSE](LICENSE) for the full text.
