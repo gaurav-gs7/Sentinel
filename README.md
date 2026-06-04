@@ -206,12 +206,3 @@ scripts/      Local demo and CI/CD runner
 docs/         Architecture and operator documentation
 ```
 
-## Resume Positioning
-
-Sentinel — Kubernetes Reliability Platform with Helios-Style Workflow Orchestration
-
-- Built a Go-based Kubernetes reliability platform that standardized service onboarding using CRDs, CLI workflows, GitOps templates, SLO policies, runbooks, dashboards, and production-readiness checks.
-- Integrated a Helios-style workflow engine for onboarding, SLO checks, rollout gates, rollback decisions, incident enrichment, ordered execution steps, retry metadata, and audit events.
-- Implemented a production-readiness engine that validates ownership, tier, pager, SLOs, rollout policy, rollback readiness, generated Kubernetes guardrails, observability defaults, and runbook coverage.
-- Developed Prometheus-backed SLO/error-budget tracking to evaluate availability, p95 latency, error rate, burn rate, and deployment eligibility for Kubernetes services.
-- Integrated local GitHub Actions-style CI/CD, Kustomize, kind, Prometheus/Grafana templates, durable incident ingestion, automated rollback evidence, and RCA timeline/postmortem generation.
