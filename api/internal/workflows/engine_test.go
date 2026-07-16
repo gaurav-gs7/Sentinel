@@ -3,6 +3,7 @@ package workflows
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/gauravgs7/sentinel/api/internal/models"
@@ -86,8 +87,41 @@ func TestEngineFindsIdempotencyKeyFromDurableStore(t *testing.T) {
 	}
 }
 
+func TestEngineFailsClosedWhenInitialPersistenceFails(t *testing.T) {
+	store := newWorkflowMemoryStore()
+	store.saveErr = errors.New("database unavailable")
+	engine := NewEngine(store)
+	stepRan := false
+
+	run := engine.Run(context.Background(), Spec{
+		Name: "persistence-failure",
+		Kind: "test",
+		Steps: []Step{{
+			Name: "must-not-run",
+			Run: func(context.Context) error {
+				stepRan = true
+				return nil
+			},
+		}},
+	})
+
+	if stepRan {
+		t.Fatal("step ran even though the workflow start could not be persisted")
+	}
+	if run.State != StateFailed {
+		t.Fatalf("expected failed workflow, got %+v", run)
+	}
+	if !strings.Contains(run.Error, "persist workflow start: database unavailable") {
+		t.Fatalf("expected persistence error, got %q", run.Error)
+	}
+	if len(run.Events) == 0 || run.Events[len(run.Events)-1].Type != "workflow-persistence-failed" {
+		t.Fatalf("expected persistence failure event, got %+v", run.Events)
+	}
+}
+
 type workflowMemoryStore struct {
-	runs map[string]models.WorkflowRun
+	runs    map[string]models.WorkflowRun
+	saveErr error
 }
 
 func newWorkflowMemoryStore() *workflowMemoryStore {
@@ -95,6 +129,9 @@ func newWorkflowMemoryStore() *workflowMemoryStore {
 }
 
 func (s *workflowMemoryStore) SaveWorkflowRun(_ context.Context, run models.WorkflowRun) error {
+	if s.saveErr != nil {
+		return s.saveErr
+	}
 	s.runs[run.ID] = run
 	return nil
 }

@@ -7,9 +7,10 @@ test:
 	go test ./...
 
 build:
-	go build ./api/cmd/sentinel-api
-	go build ./cli/cmd/sentinel
-	go build ./controller/cmd/sentinel-controller
+	mkdir -p bin
+	go build -o bin/sentinel-api ./api/cmd/sentinel-api
+	go build -o bin/sentinel ./cli/cmd/sentinel
+	go build -o bin/sentinel-controller ./controller/cmd/sentinel-controller
 
 run-api:
 	SENTINEL_API_TOKEN=local-dev-token go run ./api/cmd/sentinel-api

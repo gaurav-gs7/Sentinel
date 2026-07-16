@@ -301,6 +301,10 @@ func (s *Server) readiness(w http.ResponseWriter, r *http.Request) {
 			},
 		}},
 	})
+	if run.State != workflows.StateSucceeded {
+		writeJSON(w, http.StatusInternalServerError, map[string]any{"error": run.Error, "workflow": run})
+		return
+	}
 	writeJSON(w, http.StatusOK, map[string]any{"report": report, "workflow": run})
 }
 
@@ -322,6 +326,10 @@ func (s *Server) score(w http.ResponseWriter, r *http.Request) {
 			},
 		}},
 	})
+	if run.State != workflows.StateSucceeded {
+		writeJSON(w, http.StatusInternalServerError, map[string]any{"error": run.Error, "workflow": run})
+		return
+	}
 	writeJSON(w, http.StatusOK, map[string]any{
 		"service":  service.Name,
 		"tier":     service.Tier,
@@ -350,6 +358,10 @@ func (s *Server) slos(w http.ResponseWriter, r *http.Request) {
 			},
 		}},
 	})
+	if run.State != workflows.StateSucceeded {
+		writeJSON(w, http.StatusInternalServerError, map[string]any{"error": run.Error, "workflow": run})
+		return
+	}
 	writeJSON(w, http.StatusOK, map[string]any{"slo": status, "workflow": run})
 }
 

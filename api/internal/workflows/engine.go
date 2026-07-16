@@ -99,7 +99,9 @@ func (e *Engine) Run(ctx context.Context, spec Spec) models.WorkflowRun {
 			MaxAttempts: maxAttempts,
 		})
 	}
-	e.save(ctx, run)
+	if !e.persist(ctx, &run, "workflow start") {
+		return run
+	}
 
 	for i, step := range spec.Steps {
 		maxAttempts := run.Steps[i].MaxAttempts
@@ -114,7 +116,9 @@ func (e *Engine) Run(ctx context.Context, spec Spec) models.WorkflowRun {
 				Type:      "step-started",
 				Message:   step.Name,
 			})
-			e.save(ctx, run)
+			if !e.persist(ctx, &run, "step start") {
+				return run
+			}
 
 			if step.Run != nil {
 				err = step.Run(ctx)
@@ -128,7 +132,9 @@ func (e *Engine) Run(ctx context.Context, spec Spec) models.WorkflowRun {
 					Type:      "step-succeeded",
 					Message:   step.Name,
 				})
-				e.save(ctx, run)
+				if !e.persist(ctx, &run, "step success") {
+					return run
+				}
 				break
 			}
 			run.Steps[i].Error = err.Error()
@@ -137,7 +143,9 @@ func (e *Engine) Run(ctx context.Context, spec Spec) models.WorkflowRun {
 				Type:      "step-failed",
 				Message:   fmt.Sprintf("%s: %v", step.Name, err),
 			})
-			e.save(ctx, run)
+			if !e.persist(ctx, &run, "step failure") {
+				return run
+			}
 		}
 		if err != nil {
 			done := time.Now().UTC()
@@ -149,7 +157,9 @@ func (e *Engine) Run(ctx context.Context, spec Spec) models.WorkflowRun {
 				Type:      "workflow-failed",
 				Message:   err.Error(),
 			})
-			e.save(ctx, run)
+			if !e.persist(ctx, &run, "workflow failure") {
+				return run
+			}
 			return run
 		}
 	}
@@ -162,7 +172,9 @@ func (e *Engine) Run(ctx context.Context, spec Spec) models.WorkflowRun {
 		Type:      "workflow-succeeded",
 		Message:   fmt.Sprintf("%s workflow completed", spec.Name),
 	})
-	e.save(ctx, run)
+	if !e.persist(ctx, &run, "workflow success") {
+		return run
+	}
 	return run
 }
 
@@ -234,11 +246,33 @@ func (e *Engine) List() []models.WorkflowRun {
 	return runs
 }
 
-func (e *Engine) save(ctx context.Context, run models.WorkflowRun) {
-	e.cache(run)
+func (e *Engine) save(ctx context.Context, run models.WorkflowRun) error {
 	if e.store != nil {
-		_ = e.store.SaveWorkflowRun(ctx, run)
+		if err := e.store.SaveWorkflowRun(ctx, run); err != nil {
+			return err
+		}
 	}
+	e.cache(run)
+	return nil
+}
+
+func (e *Engine) persist(ctx context.Context, run *models.WorkflowRun, phase string) bool {
+	if err := e.save(ctx, *run); err != nil {
+		now := time.Now().UTC()
+		run.State = StateFailed
+		run.Error = fmt.Sprintf("persist %s: %v", phase, err)
+		run.CompletedAt = &now
+		run.Events = append(run.Events, models.WorkflowEvent{
+			Timestamp: now,
+			Type:      "workflow-persistence-failed",
+			Message:   run.Error,
+		})
+		// Keep the failed result visible to the caller and local diagnostics. It is
+		// deliberately not presented as durably recorded.
+		e.cache(*run)
+		return false
+	}
+	return true
 }
 
 func (e *Engine) cache(run models.WorkflowRun) {

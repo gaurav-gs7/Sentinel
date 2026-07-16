@@ -1,6 +1,6 @@
 # Sentinel Architecture
 
-Sentinel is a Kubernetes reliability platform with a Harbor-style onboarding path and a Helios-style workflow execution substrate. Sentinel owns reliability policy and Kubernetes operations; workflow execution owns ordered steps, retries, state transitions, and audit events.
+Sentinel is a Kubernetes reliability platform with a Harbor-style onboarding path and an embedded Helios-style workflow runner. Sentinel owns reliability policy and Kubernetes operations; the runner owns ordered in-process steps, retries, state transitions, and audit events.
 
 ## Planes
 
@@ -69,7 +69,7 @@ This keeps responsibilities separated:
 
 ## Workflow Boundaries
 
-Sentinel does not run a second standalone control plane next to Helios. Instead, Sentinel embeds Helios-style orchestration where reliability operations need durable execution semantics:
+Sentinel does not run a second standalone control plane next to Helios. Instead, Sentinel embeds Helios-style orchestration where reliability operations need ordered execution and a persisted audit trail:
 
 - `sentinel.service.onboarding`: validates and creates service metadata, records initial deployment, renders templates.
 - `sentinel.readiness.check`: evaluates production-readiness policy.
@@ -88,6 +88,8 @@ With PostgreSQL enabled, Sentinel persists:
 - incident records, enriched SLO signals, and RCA timeline events
 
 Workflow idempotency lookup is durable, so repeated operations with the same idempotency key can be recognized after an API restart. Service onboarding uses a deterministic key derived from the normalized service spec.
+
+The embedded runner is not a crash-resumable workflow engine. A process exit can leave the last persisted run in `running`, and the current implementation does not resume from the last completed step. Persistence failures fail the active request closed and are returned as workflow failures; they are not silently presented as successful durable execution. Operations that require crash recovery should be delegated to an external workflow engine or wait for a future resumable runner.
 
 ## Local-First Production Design
 
