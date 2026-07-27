@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "detail": "all failure-mode scenarios passed",
+  "runId": "attesta-rename-20260727",
+  "service": "failure-api",
+  "artifacts": "artifacts/failure-modes/attesta-rename-20260727"
+}

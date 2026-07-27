@@ -1,0 +1,2 @@
+2026/07/27 23:52:54 open catalog store: failed to connect to `user=attesta database=attesta`: 127.0.0.1:1 (127.0.0.1): dial error: dial tcp 127.0.0.1:1: connect: connection refused
+exit status 1

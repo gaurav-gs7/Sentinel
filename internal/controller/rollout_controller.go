@@ -31,7 +31,7 @@ import (
 )
 
 var rolloutGuardGVR = schema.GroupVersionResource{
-	Group:    "sentinel.io",
+	Group:    "attesta.io",
 	Version:  "v1",
 	Resource: "rolloutguards",
 }
@@ -82,7 +82,7 @@ func NewRolloutGuardControllerWithClients(kube kubernetes.Interface, dyn dynamic
 
 	broadcaster := record.NewBroadcaster()
 	broadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: kube.CoreV1().Events("")})
-	recorder := broadcaster.NewRecorder(runtime.NewScheme(), corev1.EventSource{Component: "sentinel-controller"})
+	recorder := broadcaster.NewRecorder(runtime.NewScheme(), corev1.EventSource{Component: "attesta-controller"})
 
 	c := &RolloutGuardController{
 		kube:        kube,
@@ -283,9 +283,9 @@ func (c *RolloutGuardController) rollbackToPreviousReplicaSet(ctx context.Contex
 	if updated.Spec.Template.Annotations == nil {
 		updated.Spec.Template.Annotations = map[string]string{}
 	}
-	updated.Spec.Template.Annotations["sentinel.io/rollback-from-revision"] = strconv.FormatInt(current, 10)
-	updated.Spec.Template.Annotations["sentinel.io/rollback-to-revision"] = strconv.FormatInt(previous.Revision, 10)
-	updated.Spec.Template.Annotations["sentinel.io/rollback-at"] = time.Now().UTC().Format(time.RFC3339)
+	updated.Spec.Template.Annotations["attesta.io/rollback-from-revision"] = strconv.FormatInt(current, 10)
+	updated.Spec.Template.Annotations["attesta.io/rollback-to-revision"] = strconv.FormatInt(previous.Revision, 10)
+	updated.Spec.Template.Annotations["attesta.io/rollback-at"] = time.Now().UTC().Format(time.RFC3339)
 	_, err = c.kube.AppsV1().Deployments(deployment.Namespace).Update(ctx, updated, metav1.UpdateOptions{})
 	if err != nil {
 		return "", err

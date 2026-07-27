@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gauravgs7/sentinel/api/internal/models"
+	"github.com/gaurav-gs7/attesta/api/internal/models"
 )
 
 type AlertRequest struct {
@@ -23,7 +23,7 @@ func Timeline(incident models.Incident, service models.Service, signals models.S
 		{Timestamp: start.Add(-7 * time.Minute), EventType: "sli-degradation", Description: fmt.Sprintf("p95 latency increased to %.0fms", signals.LatencyP95CurrentMs)},
 		{Timestamp: start.Add(-5 * time.Minute), EventType: "slo-burn", Description: fmt.Sprintf("error budget remaining %.1f%%", signals.ErrorBudgetRemainingPct)},
 		{Timestamp: start, EventType: "alert", Description: fmt.Sprintf("%s fired for %s", incident.AlertName, service.Name)},
-		{Timestamp: start.Add(1 * time.Minute), EventType: "incident-created", Description: fmt.Sprintf("Sentinel opened %s and linked owner %s", incident.ID, service.Owner)},
+		{Timestamp: start.Add(1 * time.Minute), EventType: "incident-created", Description: fmt.Sprintf("Attesta opened %s and linked owner %s", incident.ID, service.Owner)},
 		{Timestamp: start.Add(2 * time.Minute), EventType: "rollback-decision", Description: "rollback recommended because incident correlates with recent rollout"},
 	}
 }
@@ -38,7 +38,7 @@ func Postmortem(incident models.Incident, service models.Service, signals models
 Availability was %.2f%% against a %.2f%% SLO. p95 latency was %.0fms against a %dms target.
 
 ## Detection
-Detected by %s and converted into incident %s by Sentinel.
+Detected by %s and converted into incident %s by Attesta.
 
 ## Timeline
 %s

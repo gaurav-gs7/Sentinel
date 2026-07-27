@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gauravgs7/sentinel/api/internal/models"
+	"github.com/gaurav-gs7/attesta/api/internal/models"
 )
 
 const (

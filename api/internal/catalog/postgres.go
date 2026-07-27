@@ -11,7 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	_ "github.com/jackc/pgx/v5/stdlib"
 
-	"github.com/gauravgs7/sentinel/api/internal/models"
+	"github.com/gaurav-gs7/attesta/api/internal/models"
 )
 
 type PostgresStore struct {

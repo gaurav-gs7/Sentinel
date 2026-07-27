@@ -1,7 +1,7 @@
 [07:27:05] starting failure-mode demo; artifacts will be written to artifacts/failure-modes/codex-prom-durable
 [07:27:05] proving PostgreSQL unavailable fails predictably during startup
-[07:27:08] starting Sentinel API with unavailable Prometheus URL to prove fail-closed SLO behavior
-2026/05/18 12:57:09 sentinel api listening on 127.0.0.1:18081
+[07:27:08] starting Attesta API with unavailable Prometheus URL to prove fail-closed SLO behavior
+2026/05/18 12:57:09 attesta api listening on 127.0.0.1:18081
 {"time":"2026-05-18T12:57:09.870273+05:30","level":"INFO","msg":"request","method":"GET","path":"/readyz","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:50128"}
 [07:27:09] proving invalid service metadata is rejected
 {"time":"2026-05-18T12:57:09.881578+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services","status":422,"duration_ms":0,"remote_addr":"127.0.0.1:50129"}

@@ -5,10 +5,10 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 SERVICE_NAME="${SERVICE_NAME:-failure-api}"
-SENTINEL_API_TOKEN="${SENTINEL_API_TOKEN:-local-dev-token}"
-SENTINEL_PORT="${SENTINEL_PORT:-18081}"
-SENTINEL_ADDR="${SENTINEL_ADDR:-127.0.0.1:$SENTINEL_PORT}"
-SENTINEL_API_URL="${SENTINEL_API_URL:-http://127.0.0.1:$SENTINEL_PORT}"
+ATTESTA_API_TOKEN="${ATTESTA_API_TOKEN:-local-dev-token}"
+ATTESTA_PORT="${ATTESTA_PORT:-18081}"
+ATTESTA_ADDR="${ATTESTA_ADDR:-127.0.0.1:$ATTESTA_PORT}"
+ATTESTA_API_URL="${ATTESTA_API_URL:-http://127.0.0.1:$ATTESTA_PORT}"
 ARTIFACT_ROOT="${ARTIFACT_ROOT:-artifacts/failure-modes}"
 RUN_ID="${RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)}"
 PROMETHEUS_UNAVAILABLE_URL="${PROMETHEUS_UNAVAILABLE_URL:-http://127.0.0.1:1}"
@@ -89,15 +89,15 @@ api() {
       -X "$method" \
       -H "Accept: application/json" \
       -H "Content-Type: application/json" \
-      -H "X-Sentinel-Token: $SENTINEL_API_TOKEN" \
+      -H "X-Attesta-Token: $ATTESTA_API_TOKEN" \
       --data "$body" \
-      "$SENTINEL_API_URL$path")"
+      "$ATTESTA_API_URL$path")"
   else
     status="$(curl -sS -o "$output" -w "%{http_code}" \
       -X "$method" \
       -H "Accept: application/json" \
-      -H "X-Sentinel-Token: $SENTINEL_API_TOKEN" \
-      "$SENTINEL_API_URL$path")"
+      -H "X-Attesta-Token: $ATTESTA_API_TOKEN" \
+      "$ATTESTA_API_URL$path")"
   fi
   if [[ "$status" != "$expected" ]]; then
     log "expected $method $path to return $expected, got $status"
@@ -118,26 +118,26 @@ assert_contains() {
 }
 
 start_api() {
-  log "starting Sentinel API with unavailable Prometheus URL to prove fail-closed SLO behavior"
+  log "starting Attesta API with unavailable Prometheus URL to prove fail-closed SLO behavior"
   env \
     GOCACHE="$GOCACHE" \
     GOMODCACHE="$GOMODCACHE" \
-    SENTINEL_API_TOKEN="$SENTINEL_API_TOKEN" \
-    SENTINEL_ADDR="$SENTINEL_ADDR" \
-    SENTINEL_PROMETHEUS_URL="$PROMETHEUS_UNAVAILABLE_URL" \
-    go run ./api/cmd/sentinel-api >>"$log_file" 2>&1 &
+    ATTESTA_API_TOKEN="$ATTESTA_API_TOKEN" \
+    ATTESTA_ADDR="$ATTESTA_ADDR" \
+    ATTESTA_PROMETHEUS_URL="$PROMETHEUS_UNAVAILABLE_URL" \
+    go run ./api/cmd/attesta-api >>"$log_file" 2>&1 &
   api_pid="$!"
   for _ in $(seq 1 60); do
-    if curl -fsS "$SENTINEL_API_URL/readyz" >/dev/null 2>&1; then
+    if curl -fsS "$ATTESTA_API_URL/readyz" >/dev/null 2>&1; then
       return 0
     fi
     if ! kill -0 "$api_pid" >/dev/null 2>&1; then
-      log "Sentinel API exited before becoming ready"
+      log "Attesta API exited before becoming ready"
       return 1
     fi
     sleep 1
   done
-  log "timed out waiting for $SENTINEL_API_URL/readyz"
+  log "timed out waiting for $ATTESTA_API_URL/readyz"
   return 1
 }
 
@@ -147,9 +147,9 @@ postgres_unavailable_fails_predictably() {
   env \
     GOCACHE="$GOCACHE" \
     GOMODCACHE="$GOMODCACHE" \
-    SENTINEL_ADDR="127.0.0.1:$((SENTINEL_PORT + 1))" \
-    DATABASE_URL="postgres://sentinel:sentinel@127.0.0.1:1/sentinel?sslmode=disable" \
-    go run ./api/cmd/sentinel-api >"$pg_log" 2>&1 &
+    ATTESTA_ADDR="127.0.0.1:$((ATTESTA_PORT + 1))" \
+    DATABASE_URL="postgres://attesta:attesta@127.0.0.1:1/attesta?sslmode=disable" \
+    go run ./api/cmd/attesta-api >"$pg_log" 2>&1 &
   local pg_pid="$!"
   local exited="false"
   local exit_code="0"

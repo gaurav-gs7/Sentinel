@@ -1,0 +1,26 @@
+[18:22:25] starting failure-mode demo; artifacts will be written to artifacts/failure-modes/attesta-rename-20260727
+[18:22:25] proving PostgreSQL unavailable fails predictably during startup
+[18:22:28] starting Attesta API with unavailable Prometheus URL to prove fail-closed SLO behavior
+2026/07/27 23:52:29 attesta api listening on 127.0.0.1:18081
+2026/07/27 23:52:29 server error: listen tcp 127.0.0.1:18081: bind: operation not permitted
+exit status 1
+[18:22:29] Attesta API exited before becoming ready
+[18:22:29] failure-mode demo failed near line 235
+[18:22:54] starting failure-mode demo; artifacts will be written to artifacts/failure-modes/attesta-rename-20260727
+[18:22:54] proving PostgreSQL unavailable fails predictably during startup
+[18:22:55] starting Attesta API with unavailable Prometheus URL to prove fail-closed SLO behavior
+2026/07/27 23:52:55 attesta api listening on 127.0.0.1:18081
+{"time":"2026-07-27T23:52:56.404376+05:30","level":"INFO","msg":"request","method":"GET","path":"/readyz","status":200,"duration_ms":1,"remote_addr":"127.0.0.1:57021"}
+[18:22:56] proving invalid service metadata is rejected
+{"time":"2026-07-27T23:52:56.421738+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services","status":422,"duration_ms":1,"remote_addr":"127.0.0.1:57022"}
+[18:22:56] proving duplicate onboarding is idempotent
+{"time":"2026-07-27T23:52:56.447881+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services","status":201,"duration_ms":11,"remote_addr":"127.0.0.1:57023"}
+{"time":"2026-07-27T23:52:56.461819+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services","status":200,"duration_ms":3,"remote_addr":"127.0.0.1:57024"}
+[18:22:56] proving low traffic waits for more samples instead of rolling back
+{"time":"2026-07-27T23:52:56.474066+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services/failure-api/health-gate","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:57025"}
+[18:22:56] proving a bad canary records rollback intent
+{"time":"2026-07-27T23:52:56.487264+05:30","level":"INFO","msg":"request","method":"POST","path":"/api/v1/services/failure-api/health-gate","status":202,"duration_ms":0,"remote_addr":"127.0.0.1:57026"}
+{"time":"2026-07-27T23:52:56.497919+05:30","level":"INFO","msg":"request","method":"GET","path":"/api/v1/services/failure-api/deployments","status":200,"duration_ms":0,"remote_addr":"127.0.0.1:57027"}
+[18:22:56] proving Prometheus unavailable causes safe degraded fail-closed behavior
+{"time":"2026-07-27T23:52:56.513624+05:30","level":"INFO","msg":"request","method":"GET","path":"/api/v1/services/failure-api/slos","status":200,"duration_ms":1,"remote_addr":"127.0.0.1:57028"}
+[18:22:56] failure-mode demo passed; evidence written to artifacts/failure-modes/attesta-rename-20260727

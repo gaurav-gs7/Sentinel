@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "detail": "local CI/CD pipeline completed",
+  "runId": "codex-20260517T113823Z",
+  "service": "payments-api",
+  "environment": "staging",
+  "namespace": "platform",
+  "cluster": "aegis-codex-e2e",
+  "stableImage": "ghcr.io/example/payments-api:codex-20260517T113823Z-stable",
+  "canaryImage": "ghcr.io/example/payments-api:codex-20260517T113823Z-canary",
+  "artifacts": "artifacts/local-ci-cd/codex-20260517T113823Z"
+}

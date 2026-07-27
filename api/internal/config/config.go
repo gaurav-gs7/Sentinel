@@ -14,13 +14,13 @@ type Config struct {
 
 func Load() Config {
 	return Config{
-		Addr:          env("SENTINEL_ADDR", ":8080"),
+		Addr:          env("ATTESTA_ADDR", ":8080"),
 		DatabaseURL:   os.Getenv("DATABASE_URL"),
-		TemplateDir:   env("SENTINEL_TEMPLATE_DIR", "templates"),
-		OutputDir:     env("SENTINEL_OUTPUT_DIR", "generated/services"),
-		APIToken:      os.Getenv("SENTINEL_API_TOKEN"),
+		TemplateDir:   env("ATTESTA_TEMPLATE_DIR", "templates"),
+		OutputDir:     env("ATTESTA_OUTPUT_DIR", "generated/services"),
+		APIToken:      os.Getenv("ATTESTA_API_TOKEN"),
 		MaxBodyMB:     1,
-		PrometheusURL: os.Getenv("SENTINEL_PROMETHEUS_URL"),
+		PrometheusURL: os.Getenv("ATTESTA_PROMETHEUS_URL"),
 	}
 }
 

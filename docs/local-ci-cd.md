@@ -1,25 +1,25 @@
 # Local CI/CD And Deployment Runner
 
-`scripts/local-ci-cd.sh` is the full laptop-local proof path for Sentinel.
+`scripts/local-ci-cd.sh` is the full laptop-local proof path for Attesta.
 
 It intentionally mirrors a production delivery flow without requiring paid services.
 
 ## Flow
 
 1. Run preflight checks for Go, Docker, kind, kubectl, curl, and perl.
-2. Start the Sentinel API if needed.
-3. Onboard `payments-api` through `sentinel service init`.
+2. Start the Attesta API if needed.
+3. Onboard `payments-api` through `attesta service init`.
 4. Validate generated service guardrails.
 5. Run generated service tests.
 6. Render Kustomize manifests.
 7. Build stable and canary Docker image tags.
 8. Run Trivy if installed, otherwise record a scan skip.
-9. Create or reuse the `sentinel-local` kind cluster.
+9. Create or reuse the `attesta-local` kind cluster.
 10. Load images into kind.
 11. Deploy the stable revision.
 12. Deploy the canary revision.
 13. Verify `/readyz` and `/metrics`.
-14. Send a failing canary signal to Sentinel.
+14. Send a failing canary signal to Attesta.
 15. Record rollback intent.
 16. Execute `kubectl rollout undo`.
 17. Verify the live deployment image is back to the stable tag.

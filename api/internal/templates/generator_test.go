@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/gauravgs7/sentinel/api/internal/models"
+	"github.com/gaurav-gs7/attesta/api/internal/models"
 )
 
 func TestGeneratorCreatesServiceScaffold(t *testing.T) {
@@ -29,7 +29,7 @@ func TestGeneratorCreatesServiceScaffold(t *testing.T) {
 
 	required := []string{
 		"Dockerfile",
-		"sentinel-service.yaml",
+		"attesta-service.yaml",
 		"slo.yaml",
 		"rollout.yaml",
 		".github/workflows/ci.yml",

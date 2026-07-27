@@ -1,4 +1,4 @@
-module github.com/gauravgs7/sentinel
+module github.com/gaurav-gs7/attesta
 
 go 1.23.0
 

@@ -7,18 +7,18 @@ test:
 	go test ./...
 
 build:
-	go build ./api/cmd/sentinel-api
-	go build ./cli/cmd/sentinel
-	go build ./controller/cmd/sentinel-controller
+	go build -trimpath ./api/cmd/attesta-api
+	go build -trimpath ./cli/cmd/attesta
+	go build -trimpath ./controller/cmd/attesta-controller
 
 run-api:
-	SENTINEL_API_TOKEN=local-dev-token go run ./api/cmd/sentinel-api
+	ATTESTA_API_TOKEN=local-dev-token go run ./api/cmd/attesta-api
 
 run-cli:
-	SENTINEL_API_TOKEN=local-dev-token go run ./cli/cmd/sentinel
+	ATTESTA_API_TOKEN=local-dev-token go run ./cli/cmd/attesta
 
 run-controller:
-	go run ./controller/cmd/sentinel-controller
+	go run ./controller/cmd/attesta-controller
 
 demo:
 	bash scripts/demo-local.sh

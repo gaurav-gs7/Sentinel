@@ -1,0 +1,141 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    aegis.dev/environment: staging
+    aegis.dev/team: platform
+  name: platform
+---
+apiVersion: v1
+automountServiceAccountToken: false
+kind: ServiceAccount
+metadata:
+  labels:
+    aegis.dev/environment: staging
+  name: payments-api
+  namespace: platform
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    aegis.dev/environment: staging
+  name: payments-api
+  namespace: platform
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+  selector:
+    aegis.dev/environment: staging
+    app.kubernetes.io/name: payments-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    aegis.dev/environment: staging
+    app.kubernetes.io/managed-by: aegis
+    app.kubernetes.io/name: payments-api
+  name: payments-api
+  namespace: platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      aegis.dev/environment: staging
+      app.kubernetes.io/name: payments-api
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+      labels:
+        aegis.dev/environment: staging
+        app.kubernetes.io/name: payments-api
+    spec:
+      containers:
+      - env:
+        - name: OTEL_SERVICE_NAME
+          value: payments-api
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://otel-collector.platform.svc.cluster.local:4317
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: service.namespace=platform,deployment.environment=staging,aegis.team=platform
+        image: ghcr.io/example/payments-api:codex-20260517T113823Z-canary
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /readyz
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 20
+        name: app
+        ports:
+        - containerPort: 8080
+          name: http
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: http
+          initialDelaySeconds: 3
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: payments-api
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    aegis.dev/environment: staging
+    aegis.dev/tier: critical
+    app.kubernetes.io/name: payments-api
+  name: payments-api
+  namespace: platform
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      aegis.dev/environment: staging
+      app.kubernetes.io/name: payments-api
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    aegis.dev/environment: staging
+  name: payments-api
+  namespace: platform
+spec:
+  maxReplicas: 5
+  metrics:
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 70
+        type: Utilization
+    type: Resource
+  minReplicas: 2
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: payments-api

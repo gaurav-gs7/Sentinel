@@ -14,10 +14,10 @@ SERVICE_ENV="${SERVICE_ENV:-staging}"
 SERVICE_SLO="${SERVICE_SLO:-99.9}"
 SERVICE_LATENCY_P95="${SERVICE_LATENCY_P95:-300ms}"
 SERVICE_STRATEGY="${SERVICE_STRATEGY:-canary}"
-SENTINEL_API_TOKEN="${SENTINEL_API_TOKEN:-local-dev-token}"
-SENTINEL_API_URL="${SENTINEL_API_URL:-http://127.0.0.1:8080}"
-SENTINEL_ADDR="${SENTINEL_ADDR:-127.0.0.1:8080}"
-CLUSTER_NAME="${CLUSTER_NAME:-sentinel-local}"
+ATTESTA_API_TOKEN="${ATTESTA_API_TOKEN:-local-dev-token}"
+ATTESTA_API_URL="${ATTESTA_API_URL:-http://127.0.0.1:8080}"
+ATTESTA_ADDR="${ATTESTA_ADDR:-127.0.0.1:8080}"
+CLUSTER_NAME="${CLUSTER_NAME:-attesta-local}"
 NAMESPACE="${NAMESPACE:-$SERVICE_TEAM}"
 IMAGE_REPOSITORY="${IMAGE_REPOSITORY:-ghcr.io/example/$SERVICE_NAME}"
 ARTIFACT_ROOT="${ARTIFACT_ROOT:-artifacts/local-ci-cd}"
@@ -33,7 +33,7 @@ STABLE_IMAGE_NAME="${STABLE_IMAGE_NAME:-$IMAGE_REPOSITORY:$STABLE_IMAGE_TAG}"
 CANARY_IMAGE_NAME="${CANARY_IMAGE_NAME:-$IMAGE_REPOSITORY:$CANARY_IMAGE_TAG}"
 IMAGE_NAME="${IMAGE_NAME:-$CANARY_IMAGE_NAME}"
 
-export SENTINEL_API_TOKEN SENTINEL_API_URL SENTINEL_ADDR
+export ATTESTA_API_TOKEN ATTESTA_API_URL ATTESTA_ADDR
 export GOCACHE="${GOCACHE:-$ROOT_DIR/.gocache}"
 export GOMODCACHE="${GOMODCACHE:-$ROOT_DIR/.gomodcache}"
 
@@ -149,27 +149,27 @@ preflight() {
   fi
 }
 
-ensure_sentinel_api() {
-  if curl -fsS "$SENTINEL_API_URL/readyz" >/dev/null 2>&1; then
-    log "Sentinel API already running at $SENTINEL_API_URL"
+ensure_attesta_api() {
+  if curl -fsS "$ATTESTA_API_URL/readyz" >/dev/null 2>&1; then
+    log "Attesta API already running at $ATTESTA_API_URL"
     return
   fi
 
-  log "starting Sentinel API at $SENTINEL_ADDR"
+  log "starting Attesta API at $ATTESTA_ADDR"
   env \
     GOCACHE="$GOCACHE" \
     GOMODCACHE="$GOMODCACHE" \
-    SENTINEL_API_TOKEN="$SENTINEL_API_TOKEN" \
-    SENTINEL_ADDR="$SENTINEL_ADDR" \
-    go run ./api/cmd/sentinel-api >>"$log_file" 2>&1 &
+    ATTESTA_API_TOKEN="$ATTESTA_API_TOKEN" \
+    ATTESTA_ADDR="$ATTESTA_ADDR" \
+    go run ./api/cmd/attesta-api >>"$log_file" 2>&1 &
   api_pid="$!"
-  wait_for_url "$SENTINEL_API_URL/readyz" 60
+  wait_for_url "$ATTESTA_API_URL/readyz" 60
 }
 
 onboard_service() {
-  log "onboarding $SERVICE_NAME through Sentinel"
-  run env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" SENTINEL_API_TOKEN="$SENTINEL_API_TOKEN" SENTINEL_API_URL="$SENTINEL_API_URL" \
-    go run ./cli/cmd/sentinel service init "$SERVICE_NAME" \
+  log "onboarding $SERVICE_NAME through Attesta"
+  run env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" ATTESTA_API_TOKEN="$ATTESTA_API_TOKEN" ATTESTA_API_URL="$ATTESTA_API_URL" \
+    go run ./cli/cmd/attesta service init "$SERVICE_NAME" \
       --language "$SERVICE_LANGUAGE" \
       --team "$SERVICE_TEAM" \
       --owner "$SERVICE_OWNER" \
@@ -256,7 +256,7 @@ deploy_to_kind() {
   run kubectl -n "$NAMESPACE" rollout status "deployment/$SERVICE_NAME" --timeout=180s
   verify_deployment_image "$CANARY_IMAGE_NAME"
   run kubectl -n "$NAMESPACE" get "deployment/$SERVICE_NAME" "service/$SERVICE_NAME" "hpa/$SERVICE_NAME" -o wide
-  run kubectl -n "$NAMESPACE" get pods -l "app.kubernetes.io/name=$SERVICE_NAME,sentinel.dev/environment=$SERVICE_ENV" --field-selector=status.phase=Running -o wide
+  run kubectl -n "$NAMESPACE" get pods -l "app.kubernetes.io/name=$SERVICE_NAME,attesta.dev/environment=$SERVICE_ENV" --field-selector=status.phase=Running -o wide
 }
 
 verify_deployment_image() {
@@ -279,10 +279,10 @@ verify_runtime() {
   run curl -fsS "http://127.0.0.1:$PORT_FORWARD_PORT/metrics"
 }
 
-sentinel_reliability_demo() {
-  log "recording failed canary through Sentinel health gate"
-  run env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" SENTINEL_API_TOKEN="$SENTINEL_API_TOKEN" SENTINEL_API_URL="$SENTINEL_API_URL" \
-    go run ./cli/cmd/sentinel health-gate \
+attesta_reliability_demo() {
+  log "recording failed canary through Attesta health gate"
+  run env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" ATTESTA_API_TOKEN="$ATTESTA_API_TOKEN" ATTESTA_API_URL="$ATTESTA_API_URL" \
+    go run ./cli/cmd/attesta health-gate \
       --name "$SERVICE_NAME" \
       --p99-latency-ms 450 \
       --error-rate 0.2 \
@@ -292,22 +292,22 @@ sentinel_reliability_demo() {
     automate_kubernetes_rollback
   fi
 
-  run env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" SENTINEL_API_TOKEN="$SENTINEL_API_TOKEN" SENTINEL_API_URL="$SENTINEL_API_URL" \
-    go run ./cli/cmd/sentinel check "$SERVICE_NAME"
-  run env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" SENTINEL_API_TOKEN="$SENTINEL_API_TOKEN" SENTINEL_API_URL="$SENTINEL_API_URL" \
-    go run ./cli/cmd/sentinel slo status "$SERVICE_NAME"
-  run env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" SENTINEL_API_TOKEN="$SENTINEL_API_TOKEN" SENTINEL_API_URL="$SENTINEL_API_URL" \
-    go run ./cli/cmd/sentinel deployments --name "$SERVICE_NAME"
+  run env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" ATTESTA_API_TOKEN="$ATTESTA_API_TOKEN" ATTESTA_API_URL="$ATTESTA_API_URL" \
+    go run ./cli/cmd/attesta check "$SERVICE_NAME"
+  run env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" ATTESTA_API_TOKEN="$ATTESTA_API_TOKEN" ATTESTA_API_URL="$ATTESTA_API_URL" \
+    go run ./cli/cmd/attesta slo status "$SERVICE_NAME"
+  run env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" ATTESTA_API_TOKEN="$ATTESTA_API_TOKEN" ATTESTA_API_URL="$ATTESTA_API_URL" \
+    go run ./cli/cmd/attesta deployments --name "$SERVICE_NAME"
   simulate_incident
-  run env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" SENTINEL_API_TOKEN="$SENTINEL_API_TOKEN" SENTINEL_API_URL="$SENTINEL_API_URL" \
-    go run ./cli/cmd/sentinel workflows list
-  run curl -fsS "$SENTINEL_API_URL/metrics"
+  run env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" ATTESTA_API_TOKEN="$ATTESTA_API_TOKEN" ATTESTA_API_URL="$ATTESTA_API_URL" \
+    go run ./cli/cmd/attesta workflows list
+  run curl -fsS "$ATTESTA_API_URL/metrics"
 }
 
 simulate_incident() {
   log "creating incident from simulated Alertmanager signal"
-  env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" SENTINEL_API_TOKEN="$SENTINEL_API_TOKEN" SENTINEL_API_URL="$SENTINEL_API_URL" \
-    go run ./cli/cmd/sentinel incident create \
+  env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" ATTESTA_API_TOKEN="$ATTESTA_API_TOKEN" ATTESTA_API_URL="$ATTESTA_API_URL" \
+    go run ./cli/cmd/attesta incident create \
       --service "$SERVICE_NAME" \
       --alert HighErrorRate \
       --error-rate 8.2 \
@@ -315,10 +315,10 @@ simulate_incident() {
   local incident_id
   incident_id="$(perl -ne 'print "$1\n" if /\"id\": \"([^\"]+)\"/' "$incident_file" | head -n1)"
   if [[ -n "$incident_id" ]]; then
-    run env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" SENTINEL_API_TOKEN="$SENTINEL_API_TOKEN" SENTINEL_API_URL="$SENTINEL_API_URL" \
-      go run ./cli/cmd/sentinel incident timeline "$incident_id"
-    run env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" SENTINEL_API_TOKEN="$SENTINEL_API_TOKEN" SENTINEL_API_URL="$SENTINEL_API_URL" \
-      go run ./cli/cmd/sentinel incident postmortem "$incident_id"
+    run env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" ATTESTA_API_TOKEN="$ATTESTA_API_TOKEN" ATTESTA_API_URL="$ATTESTA_API_URL" \
+      go run ./cli/cmd/attesta incident timeline "$incident_id"
+    run env GOCACHE="$GOCACHE" GOMODCACHE="$GOMODCACHE" ATTESTA_API_TOKEN="$ATTESTA_API_TOKEN" ATTESTA_API_URL="$ATTESTA_API_URL" \
+      go run ./cli/cmd/attesta incident postmortem "$incident_id"
   fi
 }
 
@@ -345,14 +345,14 @@ EOF
 main() {
   log "starting local CI/CD pipeline for $SERVICE_NAME"
   preflight
-  ensure_sentinel_api
+  ensure_attesta_api
   onboard_service
   service_ci
   build_and_scan_image
   ensure_kind_cluster
   deploy_to_kind
   verify_runtime
-  sentinel_reliability_demo
+  attesta_reliability_demo
   write_summary "passed" "local CI/CD pipeline completed"
   log "pipeline passed; evidence written to $run_dir"
   if [[ "$KEEP_CLUSTER" != "true" ]]; then

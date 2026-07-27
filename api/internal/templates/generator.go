@@ -9,7 +9,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/gauravgs7/sentinel/api/internal/models"
+	"github.com/gaurav-gs7/attesta/api/internal/models"
 )
 
 type Generator struct {
@@ -57,7 +57,7 @@ func (g *Generator) Generate(service models.Service) (Result, error) {
 	var files []string
 	for _, section := range []copySection{
 		{source: languageTemplates, target: outputPath},
-		{source: filepath.Join(g.templateDir, "sentinel"), target: outputPath},
+		{source: filepath.Join(g.templateDir, "attesta"), target: outputPath},
 		{source: filepath.Join(g.templateDir, "github-actions"), target: filepath.Join(outputPath, ".github", "workflows")},
 		{source: filepath.Join(g.templateDir, "kustomize", "base"), target: filepath.Join(outputPath, "k8s", "base")},
 		{source: filepath.Join(g.templateDir, "kustomize", "overlays", "dev"), target: filepath.Join(outputPath, "k8s", "overlays", "dev")},

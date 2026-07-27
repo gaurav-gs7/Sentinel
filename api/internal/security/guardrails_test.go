@@ -3,7 +3,7 @@ package security
 import (
 	"testing"
 
-	"github.com/gauravgs7/sentinel/api/internal/models"
+	"github.com/gaurav-gs7/attesta/api/internal/models"
 )
 
 func TestValidateServiceRejectsInvalidName(t *testing.T) {
