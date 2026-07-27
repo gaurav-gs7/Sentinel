@@ -17,7 +17,7 @@ resource "kubernetes_namespace" "{{ .Service.Name }}" {
   metadata {
     name = var.namespace
     labels = {
-      "sentinel.dev/team" = "{{ .Service.Team }}"
+      "attesta.dev/team" = "{{ .Service.Team }}"
     }
   }
 }

@@ -8,18 +8,18 @@ test:
 
 build:
 	mkdir -p bin
-	go build -o bin/sentinel-api ./api/cmd/sentinel-api
-	go build -o bin/sentinel ./cli/cmd/sentinel
-	go build -o bin/sentinel-controller ./controller/cmd/sentinel-controller
+	go build -trimpath -o bin/attesta-api ./api/cmd/attesta-api
+	go build -trimpath -o bin/attesta ./cli/cmd/attesta
+	go build -trimpath -o bin/attesta-controller ./controller/cmd/attesta-controller
 
 run-api:
-	SENTINEL_API_TOKEN=local-dev-token go run ./api/cmd/sentinel-api
+	ATTESTA_API_TOKEN=local-dev-token go run ./api/cmd/attesta-api
 
 run-cli:
-	SENTINEL_API_TOKEN=local-dev-token go run ./cli/cmd/sentinel
+	ATTESTA_API_TOKEN=local-dev-token go run ./cli/cmd/attesta
 
 run-controller:
-	go run ./controller/cmd/sentinel-controller
+	go run ./controller/cmd/attesta-controller
 
 demo:
 	bash scripts/demo-local.sh

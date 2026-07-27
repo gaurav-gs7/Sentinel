@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gauravgs7/sentinel/internal/controller"
+	"github.com/gaurav-gs7/attesta/internal/controller"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )

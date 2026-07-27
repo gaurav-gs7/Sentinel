@@ -10,10 +10,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gauravgs7/sentinel/api/internal/catalog"
-	"github.com/gauravgs7/sentinel/api/internal/config"
-	"github.com/gauravgs7/sentinel/api/internal/httpapi"
-	"github.com/gauravgs7/sentinel/api/internal/templates"
+	"github.com/gaurav-gs7/attesta/api/internal/catalog"
+	"github.com/gaurav-gs7/attesta/api/internal/config"
+	"github.com/gaurav-gs7/attesta/api/internal/httpapi"
+	"github.com/gaurav-gs7/attesta/api/internal/templates"
 )
 
 func main() {
@@ -44,7 +44,7 @@ func main() {
 
 	errCh := make(chan error, 1)
 	go func() {
-		log.Printf("sentinel api listening on %s", cfg.Addr)
+		log.Printf("attesta api listening on %s", cfg.Addr)
 		errCh <- server.ListenAndServe()
 	}()
 

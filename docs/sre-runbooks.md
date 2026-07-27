@@ -1,6 +1,6 @@
 # SRE Runbooks
 
-Sentinel runbooks are generated per service and include:
+Attesta runbooks are generated per service and include:
 
 - Ownership and escalation
 - Availability and latency SLO

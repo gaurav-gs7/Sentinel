@@ -4,8 +4,8 @@ metadata:
   name: {{ .Service.Name }}-{{ .Service.Environment }}
   namespace: argocd
   labels:
-    sentinel.dev/service: {{ .Service.Name }}
-    sentinel.dev/team: {{ .Service.Team }}
+    attesta.dev/service: {{ .Service.Name }}
+    attesta.dev/team: {{ .Service.Team }}
 spec:
   project: default
   source:

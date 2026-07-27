@@ -9,6 +9,6 @@ generated/
 coverage.out
 artifacts/*
 !artifacts/README.md
-sentinel
-sentinel-api
-sentinel-controller
+attesta
+attesta-api
+attesta-controller

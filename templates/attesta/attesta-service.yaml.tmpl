@@ -1,11 +1,11 @@
-apiVersion: sentinel.io/v1
-kind: SentinelService
+apiVersion: attesta.io/v1
+kind: AttestaService
 metadata:
   name: {{ .Service.Name }}
   namespace: {{ .Service.Namespace }}
   labels:
-    sentinel.dev/tier: {{ .Service.Tier }}
-    sentinel.dev/team: {{ .Service.Team }}
+    attesta.dev/tier: {{ .Service.Tier }}
+    attesta.dev/team: {{ .Service.Team }}
 spec:
   owner: {{ .Service.Owner }}
   team: {{ .Service.Team }}

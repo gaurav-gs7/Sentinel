@@ -1,6 +1,6 @@
 # Security Guardrails
 
-Sentinel starts with controls that are simple enough to run locally but map to real platform policy:
+Attesta starts with controls that are simple enough to run locally but map to real platform policy:
 
 - Services must have an owner and team.
 - Namespaces and service names must be valid Kubernetes DNS labels.

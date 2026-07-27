@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Service.Namespace }}
   labels:
     app.kubernetes.io/name: {{ .Service.Name }}
-    sentinel.dev/tier: {{ .Service.Tier }}
+    attesta.dev/tier: {{ .Service.Tier }}
 spec:
   minAvailable: 1
   selector:

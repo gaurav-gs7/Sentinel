@@ -10,7 +10,7 @@ terraform {
 
 variable "platform_namespaces" {
   type    = list(string)
-  default = ["argocd", "monitoring", "sentinel-system"]
+  default = ["argocd", "monitoring", "attesta-system"]
 }
 
 resource "kubernetes_namespace" "platform" {
@@ -19,7 +19,7 @@ resource "kubernetes_namespace" "platform" {
   metadata {
     name = each.value
     labels = {
-      "sentinel.dev/managed" = "true"
+      "attesta.dev/managed" = "true"
     }
   }
 }

@@ -1,10 +1,10 @@
-# Sentinel Controller Operator
+# Attesta Controller Operator
 
-`sentinel-controller` is the Kubernetes reconciliation layer for Sentinel rollout policy. It watches `RolloutGuard` resources, compares the declared guard with the live Deployment state, writes status conditions, emits Kubernetes Events, and restores the previous ReplicaSet template when a guarded rollout is blocked and rollback is enabled.
+`attesta-controller` is the Kubernetes reconciliation layer for Attesta rollout policy. It watches `RolloutGuard` resources, compares the declared guard with the live Deployment state, writes status conditions, emits Kubernetes Events, and restores the previous ReplicaSet template when a guarded rollout is blocked and rollback is enabled.
 
 ## Control Loop
 
-1. Watch `sentinel.io/v1` `RolloutGuard` resources.
+1. Watch `attesta.io/v1` `RolloutGuard` resources.
 2. Resolve `spec.deploymentRef`, or fall back to `spec.serviceRef`.
 3. Read the matching `apps/v1` Deployment.
 4. Evaluate rollout state from Deployment generation, updated replicas, available replicas, pause state, and `ProgressDeadlineExceeded` conditions.
@@ -15,7 +15,7 @@
 ## Run Locally
 
 ```bash
-go run ./controller/cmd/sentinel-controller --kubeconfig "$HOME/.kube/config" --resync=30s
+go run ./controller/cmd/attesta-controller --kubeconfig "$HOME/.kube/config" --resync=30s
 ```
 
 ## Deploy To A Cluster
@@ -25,10 +25,10 @@ kubectl apply -k deploy/crds
 kubectl apply -k deploy/controller
 ```
 
-The deployment expects an image named `ghcr.io/example/sentinel-controller:latest`. Build and publish your own image with:
+The deployment expects an image named `ghcr.io/example/attesta-controller:latest`. Build and publish your own image with:
 
 ```bash
-docker build -f controller/Dockerfile -t ghcr.io/example/sentinel-controller:latest .
+docker build -f controller/Dockerfile -t ghcr.io/example/attesta-controller:latest .
 ```
 
 ## Status Contract

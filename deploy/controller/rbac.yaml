@@ -1,12 +1,12 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: sentinel-controller
+  name: attesta-controller
 rules:
-  - apiGroups: ["sentinel.io"]
+  - apiGroups: ["attesta.io"]
     resources: ["rolloutguards"]
     verbs: ["get", "list", "watch"]
-  - apiGroups: ["sentinel.io"]
+  - apiGroups: ["attesta.io"]
     resources: ["rolloutguards/status"]
     verbs: ["get", "patch", "update"]
   - apiGroups: ["apps"]
@@ -22,12 +22,12 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: sentinel-controller
+  name: attesta-controller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: sentinel-controller
+  name: attesta-controller
 subjects:
   - kind: ServiceAccount
-    name: sentinel-controller
-    namespace: sentinel-system
+    name: attesta-controller
+    namespace: attesta-system

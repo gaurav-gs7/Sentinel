@@ -4,24 +4,24 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-export SENTINEL_API_TOKEN="${SENTINEL_API_TOKEN:-local-dev-token}"
-export SENTINEL_ADDR="${SENTINEL_ADDR:-127.0.0.1:8080}"
-export SENTINEL_API_URL="${SENTINEL_API_URL:-http://127.0.0.1:8080}"
+export ATTESTA_API_TOKEN="${ATTESTA_API_TOKEN:-local-dev-token}"
+export ATTESTA_ADDR="${ATTESTA_ADDR:-127.0.0.1:8080}"
+export ATTESTA_API_URL="${ATTESTA_API_URL:-http://127.0.0.1:8080}"
 export GOCACHE="${GOCACHE:-$ROOT_DIR/.gocache}"
 export GOMODCACHE="${GOMODCACHE:-$ROOT_DIR/.gomodcache}"
 
-go run ./api/cmd/sentinel-api &
+go run ./api/cmd/attesta-api &
 api_pid=$!
 trap 'kill "$api_pid" 2>/dev/null || true' EXIT
 
 for _ in $(seq 1 30); do
-  if curl -fsS "$SENTINEL_API_URL/readyz" >/dev/null 2>&1; then
+  if curl -fsS "$ATTESTA_API_URL/readyz" >/dev/null 2>&1; then
     break
   fi
   sleep 1
 done
 
-go run ./cli/cmd/sentinel service init payments-api \
+go run ./cli/cmd/attesta service init payments-api \
   --language go \
   --team platform \
   --owner payments-platform \
@@ -32,13 +32,13 @@ go run ./cli/cmd/sentinel service init payments-api \
   --slo-latency-p95 300ms \
   --deployment canary
 
-go run ./cli/cmd/sentinel check payments-api
-go run ./cli/cmd/sentinel slo status payments-api
-go run ./cli/cmd/sentinel rollout status payments-api
-go run ./cli/cmd/sentinel health-gate --name payments-api --p99-latency-ms 450 --error-rate 0.2 --success-count 100
-go run ./cli/cmd/sentinel deployments --name payments-api
-go run ./cli/cmd/sentinel incident create --service payments-api --alert HighErrorRate --error-rate 8.2 --latency-p95-ms 850
-go run ./cli/cmd/sentinel incident list
-go run ./cli/cmd/sentinel workflows list
+go run ./cli/cmd/attesta check payments-api
+go run ./cli/cmd/attesta slo status payments-api
+go run ./cli/cmd/attesta rollout status payments-api
+go run ./cli/cmd/attesta health-gate --name payments-api --p99-latency-ms 450 --error-rate 0.2 --success-count 100
+go run ./cli/cmd/attesta deployments --name payments-api
+go run ./cli/cmd/attesta incident create --service payments-api --alert HighErrorRate --error-rate 8.2 --latency-p95-ms 850
+go run ./cli/cmd/attesta incident list
+go run ./cli/cmd/attesta workflows list
 
-curl -fsS "$SENTINEL_API_URL/metrics" | sed -n '1,20p'
+curl -fsS "$ATTESTA_API_URL/metrics" | sed -n '1,20p'

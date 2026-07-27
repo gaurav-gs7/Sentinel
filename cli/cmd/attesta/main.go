@@ -56,67 +56,67 @@ func main() {
 	switch os.Args[1] {
 	case "service":
 		if err := service(os.Args[2:]); err != nil {
-			fmt.Fprintf(os.Stderr, "sentinel: %v\n", err)
+			fmt.Fprintf(os.Stderr, "attesta: %v\n", err)
 			os.Exit(1)
 		}
 	case "onboard":
 		if err := onboard(os.Args[2:]); err != nil {
-			fmt.Fprintf(os.Stderr, "sentinel: %v\n", err)
+			fmt.Fprintf(os.Stderr, "attesta: %v\n", err)
 			os.Exit(1)
 		}
 	case "list":
 		if err := get("/api/v1/services"); err != nil {
-			fmt.Fprintf(os.Stderr, "sentinel: %v\n", err)
+			fmt.Fprintf(os.Stderr, "attesta: %v\n", err)
 			os.Exit(1)
 		}
 	case "status":
 		if err := serviceGet(os.Args[2:], "status", "/api/v1/services/%s/status"); err != nil {
-			fmt.Fprintf(os.Stderr, "sentinel: %v\n", err)
+			fmt.Fprintf(os.Stderr, "attesta: %v\n", err)
 			os.Exit(1)
 		}
 	case "deployments":
 		if err := serviceGet(os.Args[2:], "deployments", "/api/v1/services/%s/deployments"); err != nil {
-			fmt.Fprintf(os.Stderr, "sentinel: %v\n", err)
+			fmt.Fprintf(os.Stderr, "attesta: %v\n", err)
 			os.Exit(1)
 		}
 	case "rollback":
 		if err := servicePost(os.Args[2:], "rollback", "/api/v1/services/%s/rollback", nil); err != nil {
-			fmt.Fprintf(os.Stderr, "sentinel: %v\n", err)
+			fmt.Fprintf(os.Stderr, "attesta: %v\n", err)
 			os.Exit(1)
 		}
 	case "health-gate":
 		if err := healthGate(os.Args[2:]); err != nil {
-			fmt.Fprintf(os.Stderr, "sentinel: %v\n", err)
+			fmt.Fprintf(os.Stderr, "attesta: %v\n", err)
 			os.Exit(1)
 		}
 	case "check":
 		if err := serviceGetByArg(os.Args[2:], "check", "/api/v1/services/%s/readiness"); err != nil {
-			fmt.Fprintf(os.Stderr, "sentinel: %v\n", err)
+			fmt.Fprintf(os.Stderr, "attesta: %v\n", err)
 			os.Exit(1)
 		}
 	case "score":
 		if err := serviceGetByArg(os.Args[2:], "score", "/api/v1/services/%s/score"); err != nil {
-			fmt.Fprintf(os.Stderr, "sentinel: %v\n", err)
+			fmt.Fprintf(os.Stderr, "attesta: %v\n", err)
 			os.Exit(1)
 		}
 	case "slo":
 		if err := slo(os.Args[2:]); err != nil {
-			fmt.Fprintf(os.Stderr, "sentinel: %v\n", err)
+			fmt.Fprintf(os.Stderr, "attesta: %v\n", err)
 			os.Exit(1)
 		}
 	case "rollout":
 		if err := rollout(os.Args[2:]); err != nil {
-			fmt.Fprintf(os.Stderr, "sentinel: %v\n", err)
+			fmt.Fprintf(os.Stderr, "attesta: %v\n", err)
 			os.Exit(1)
 		}
 	case "incident":
 		if err := incident(os.Args[2:]); err != nil {
-			fmt.Fprintf(os.Stderr, "sentinel: %v\n", err)
+			fmt.Fprintf(os.Stderr, "attesta: %v\n", err)
 			os.Exit(1)
 		}
 	case "workflow", "workflows":
 		if err := workflow(os.Args[2:]); err != nil {
-			fmt.Fprintf(os.Stderr, "sentinel: %v\n", err)
+			fmt.Fprintf(os.Stderr, "attesta: %v\n", err)
 			os.Exit(1)
 		}
 	default:
@@ -399,8 +399,8 @@ func call(method, path string, payload any) error {
 	if payload != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
-	if token := os.Getenv("SENTINEL_API_TOKEN"); token != "" {
-		req.Header.Set("X-Sentinel-Token", token)
+	if token := os.Getenv("ATTESTA_API_TOKEN"); token != "" {
+		req.Header.Set("X-Attesta-Token", token)
 	}
 
 	client := &http.Client{Timeout: 10 * time.Second}
@@ -433,7 +433,7 @@ func printJSON(raw []byte) {
 }
 
 func baseURL() string {
-	value := os.Getenv("SENTINEL_API_URL")
+	value := os.Getenv("ATTESTA_API_URL")
 	if value == "" {
 		return "http://127.0.0.1:8080"
 	}
@@ -441,27 +441,27 @@ func baseURL() string {
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, `Sentinel CLI
+	fmt.Fprintf(os.Stderr, `Attesta CLI
 
 Usage:
-  sentinel service init payments-api --owner payments-platform --team platform --tier critical --language go --slo-availability 99.9 --slo-latency-p95 300ms --deployment canary --pager payments-oncall
-  sentinel onboard --name payments-api --language go --team platform --owner gaurav --env staging --slo 99.9 --strategy canary
-  sentinel service list
-  sentinel service describe payments-api
-  sentinel check payments-api
-  sentinel score payments-api
-  sentinel slo status payments-api
-  sentinel rollout status payments-api
-  sentinel rollout rollback payments-api
-  sentinel incident create --service payments-api --alert HighErrorRate --error-rate 8.2 --latency-p95-ms 850
-  sentinel incident list
-  sentinel incident show inc-20260516103000
-  sentinel workflows list
-  sentinel workflows show wf-...
-  sentinel list
-  sentinel status --name payments-api
-  sentinel health-gate --name payments-api --p99-latency-ms 450 --error-rate 0.2 --success-count 100
-  sentinel rollback --name payments-api
-  sentinel deployments --name payments-api
+  attesta service init payments-api --owner payments-platform --team platform --tier critical --language go --slo-availability 99.9 --slo-latency-p95 300ms --deployment canary --pager payments-oncall
+  attesta onboard --name payments-api --language go --team platform --owner gaurav --env staging --slo 99.9 --strategy canary
+  attesta service list
+  attesta service describe payments-api
+  attesta check payments-api
+  attesta score payments-api
+  attesta slo status payments-api
+  attesta rollout status payments-api
+  attesta rollout rollback payments-api
+  attesta incident create --service payments-api --alert HighErrorRate --error-rate 8.2 --latency-p95-ms 850
+  attesta incident list
+  attesta incident show inc-20260516103000
+  attesta workflows list
+  attesta workflows show wf-...
+  attesta list
+  attesta status --name payments-api
+  attesta health-gate --name payments-api --p99-latency-ms 450 --error-rate 0.2 --success-count 100
+  attesta rollback --name payments-api
+  attesta deployments --name payments-api
 `)
 }

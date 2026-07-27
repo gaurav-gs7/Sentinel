@@ -40,6 +40,6 @@ jobs:
         with:
           version: v1.32.4
       - name: Render CRDs
-        run: kubectl kustomize deploy/crds >/tmp/sentinel-crds.yaml
+        run: kubectl kustomize deploy/crds >/tmp/attesta-crds.yaml
       - name: Render controller
-        run: kubectl kustomize deploy/controller >/tmp/sentinel-controller.yaml
+        run: kubectl kustomize deploy/controller >/tmp/attesta-controller.yaml

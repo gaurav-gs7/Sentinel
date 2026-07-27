@@ -1,6 +1,6 @@
 # Generated demo evidence
 
-Sentinel writes local CI/CD and failure-mode evidence beneath this directory. Run outputs are intentionally ignored because they contain timestamps, environment-specific paths, raw logs, and rendered manifests that create repository churn.
+Attesta writes local CI/CD and failure-mode evidence beneath this directory. Run outputs are intentionally ignored because they contain timestamps, environment-specific paths, raw logs, and rendered manifests that create repository churn.
 
 Generate fresh evidence with:
 

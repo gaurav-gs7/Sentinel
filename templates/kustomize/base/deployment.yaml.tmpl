@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Service.Namespace }}
   labels:
     app.kubernetes.io/name: {{ .Service.Name }}
-    app.kubernetes.io/managed-by: sentinel
+    app.kubernetes.io/managed-by: attesta
 spec:
   replicas: 2
   selector:
@@ -35,7 +35,7 @@ spec:
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: http://otel-collector.{{ .Service.Namespace }}.svc.cluster.local:4317
             - name: OTEL_RESOURCE_ATTRIBUTES
-              value: service.namespace={{ .Service.Namespace }},deployment.environment={{ .Service.Environment }},sentinel.team={{ .Service.Team }}
+              value: service.namespace={{ .Service.Namespace }},deployment.environment={{ .Service.Environment }},attesta.team={{ .Service.Team }}
           ports:
             - name: http
               containerPort: {{ .ContainerPort }}

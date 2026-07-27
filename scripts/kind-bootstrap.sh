@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cluster_name="${1:-sentinel}"
+cluster_name="${1:-attesta}"
 
 kind create cluster --name "$cluster_name" --wait 120s
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -

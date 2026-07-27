@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: sentinel-system
+  name: attesta-system
   labels:
-    app.kubernetes.io/name: sentinel-controller
-    app.kubernetes.io/managed-by: sentinel
+    app.kubernetes.io/name: attesta-controller
+    app.kubernetes.io/managed-by: attesta

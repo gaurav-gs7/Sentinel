@@ -1,8 +1,8 @@
 # Production Readiness
 
-Sentinel defines production readiness as a service having enough metadata, Kubernetes safety controls, observability, SLOs, rollout policy, and incident ownership to be safely operated.
+Attesta defines production readiness as a service having enough metadata, Kubernetes safety controls, observability, SLOs, rollout policy, and incident ownership to be safely operated.
 
-## Sentinel Service Checks
+## Attesta Service Checks
 
 The API and CLI validate:
 

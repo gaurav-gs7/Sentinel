@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/gauravgs7/sentinel/api/internal/catalog"
-	"github.com/gauravgs7/sentinel/api/internal/templates"
+	"github.com/gaurav-gs7/attesta/api/internal/catalog"
+	"github.com/gaurav-gs7/attesta/api/internal/templates"
 )
 
 func TestAPITokenRequiredForAPIPaths(t *testing.T) {
@@ -204,7 +204,7 @@ func authorizedRequest(server *Server, method, path string, body []byte) *httpte
 		reader = bytes.NewReader(body)
 	}
 	req := httptest.NewRequest(method, path, reader)
-	req.Header.Set("X-Sentinel-Token", "secret")
+	req.Header.Set("X-Attesta-Token", "secret")
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}

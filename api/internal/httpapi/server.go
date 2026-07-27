@@ -16,16 +16,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gauravgs7/sentinel/api/internal/catalog"
-	"github.com/gauravgs7/sentinel/api/internal/incidents"
-	"github.com/gauravgs7/sentinel/api/internal/models"
-	promclient "github.com/gauravgs7/sentinel/api/internal/prometheus"
-	"github.com/gauravgs7/sentinel/api/internal/readiness"
-	"github.com/gauravgs7/sentinel/api/internal/reliability"
-	"github.com/gauravgs7/sentinel/api/internal/security"
-	sloengine "github.com/gauravgs7/sentinel/api/internal/slo"
-	"github.com/gauravgs7/sentinel/api/internal/templates"
-	"github.com/gauravgs7/sentinel/api/internal/workflows"
+	"github.com/gaurav-gs7/attesta/api/internal/catalog"
+	"github.com/gaurav-gs7/attesta/api/internal/incidents"
+	"github.com/gaurav-gs7/attesta/api/internal/models"
+	promclient "github.com/gaurav-gs7/attesta/api/internal/prometheus"
+	"github.com/gaurav-gs7/attesta/api/internal/readiness"
+	"github.com/gaurav-gs7/attesta/api/internal/reliability"
+	"github.com/gaurav-gs7/attesta/api/internal/security"
+	sloengine "github.com/gaurav-gs7/attesta/api/internal/slo"
+	"github.com/gaurav-gs7/attesta/api/internal/templates"
+	"github.com/gaurav-gs7/attesta/api/internal/workflows"
 )
 
 type Server struct {
@@ -144,7 +144,7 @@ func (s *Server) createService(w http.ResponseWriter, r *http.Request) {
 	idempotent := false
 	run := s.workflows.Run(r.Context(), workflows.Spec{
 		Name:           "service-onboarding",
-		Kind:           "sentinel.service.onboarding",
+		Kind:           "attesta.service.onboarding",
 		Service:        service.Name,
 		IdempotencyKey: serviceOnboardingKey(service),
 		Steps: []workflows.Step{
@@ -290,7 +290,7 @@ func (s *Server) readiness(w http.ResponseWriter, r *http.Request) {
 	var report models.ReadinessReport
 	run := s.workflows.Run(r.Context(), workflows.Spec{
 		Name:    "production-readiness-check",
-		Kind:    "sentinel.readiness.check",
+		Kind:    "attesta.readiness.check",
 		Service: service.Name,
 		Steps: []workflows.Step{{
 			Name:        "evaluate-service-production-readiness",
@@ -316,7 +316,7 @@ func (s *Server) score(w http.ResponseWriter, r *http.Request) {
 	var report models.ReadinessReport
 	run := s.workflows.Run(r.Context(), workflows.Spec{
 		Name:    "production-readiness-score",
-		Kind:    "sentinel.readiness.score",
+		Kind:    "attesta.readiness.score",
 		Service: service.Name,
 		Steps: []workflows.Step{{
 			Name: "calculate-score",
@@ -347,7 +347,7 @@ func (s *Server) slos(w http.ResponseWriter, r *http.Request) {
 	var status models.SLOStatus
 	run := s.workflows.Run(r.Context(), workflows.Spec{
 		Name:    "slo-error-budget-evaluation",
-		Kind:    "sentinel.slo.evaluate",
+		Kind:    "attesta.slo.evaluate",
 		Service: service.Name,
 		Steps: []workflows.Step{{
 			Name:        "evaluate-sli-signals-and-error-budget",
@@ -416,7 +416,7 @@ func (s *Server) startRollout(w http.ResponseWriter, r *http.Request) {
 	var deployment models.Deployment
 	run := s.workflows.Run(r.Context(), workflows.Spec{
 		Name:    "rollout-start",
-		Kind:    "sentinel.rollout.start",
+		Kind:    "attesta.rollout.start",
 		Service: service.Name,
 		Steps: []workflows.Step{
 			{
@@ -488,7 +488,7 @@ func (s *Server) pauseRollout(w http.ResponseWriter, r *http.Request) {
 	var deployment models.Deployment
 	run := s.workflows.Run(r.Context(), workflows.Spec{
 		Name:    "rollout-pause",
-		Kind:    "sentinel.rollout.pause",
+		Kind:    "attesta.rollout.pause",
 		Service: service.Name,
 		Steps: []workflows.Step{{
 			Name:        "record-rollout-pause",
@@ -522,7 +522,7 @@ func (s *Server) rollback(w http.ResponseWriter, r *http.Request) {
 	var deployment models.Deployment
 	run := s.workflows.Run(r.Context(), workflows.Spec{
 		Name:    "rollout-rollback",
-		Kind:    "sentinel.rollout.rollback",
+		Kind:    "attesta.rollout.rollback",
 		Service: service.Name,
 		Steps: []workflows.Step{{
 			Name:        "record-rollback-intent",
@@ -569,7 +569,7 @@ func (s *Server) healthGate(w http.ResponseWriter, r *http.Request) {
 	var rollback *models.Deployment
 	run := s.workflows.Run(r.Context(), workflows.Spec{
 		Name:    "rollout-health-gate",
-		Kind:    "sentinel.rollout.health-gate",
+		Kind:    "attesta.rollout.health-gate",
 		Service: service.Name,
 		Steps: []workflows.Step{
 			{
@@ -662,7 +662,7 @@ func (s *Server) createIncident(w http.ResponseWriter, r *http.Request) {
 	var record models.IncidentRecord
 	run := s.workflows.Run(r.Context(), workflows.Spec{
 		Name:    "incident-enrichment",
-		Kind:    "sentinel.incident.enrichment",
+		Kind:    "attesta.incident.enrichment",
 		Service: service.Name,
 		Steps: []workflows.Step{
 			{
@@ -748,7 +748,7 @@ func (s *Server) resolveIncident(w http.ResponseWriter, r *http.Request) {
 	missing := false
 	run := s.workflows.Run(r.Context(), workflows.Spec{
 		Name: "incident-resolve",
-		Kind: "sentinel.incident.resolve",
+		Kind: "attesta.incident.resolve",
 		Steps: []workflows.Step{{
 			Name:        "mark-incident-resolved",
 			MaxAttempts: 1,
@@ -848,7 +848,7 @@ func (s *Server) runbook(w http.ResponseWriter, r *http.Request) {
 3. Inspect pod restarts, CPU, memory, PDB status, and HPA saturation.
 4. Review the latest deployment, Git SHA, and image scan result.
 5. Roll back if the health gate fails during canary.
-6. Create an incident and attach the Sentinel timeline/postmortem draft.
+6. Create an incident and attach the Attesta timeline/postmortem draft.
 
 ## Rollback
 
@@ -1073,9 +1073,9 @@ func (s *Server) auth(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		token := r.Header.Get("X-Sentinel-Token")
+		token := r.Header.Get("X-Attesta-Token")
 		if subtle.ConstantTimeCompare([]byte(token), []byte(s.apiToken)) != 1 {
-			writeError(w, http.StatusUnauthorized, "missing or invalid Sentinel API token")
+			writeError(w, http.StatusUnauthorized, "missing or invalid Attesta API token")
 			return
 		}
 		next.ServeHTTP(w, r)
@@ -1153,14 +1153,14 @@ func (m *serverMetrics) render(uptime time.Duration) string {
 	defer m.mu.Unlock()
 
 	var b strings.Builder
-	b.WriteString("# HELP sentinel_uptime_seconds Sentinel API uptime in seconds.\n")
-	b.WriteString("# TYPE sentinel_uptime_seconds gauge\n")
-	fmt.Fprintf(&b, "sentinel_uptime_seconds %d\n", int(uptime.Seconds()))
-	b.WriteString("# HELP sentinel_http_requests_total Total Sentinel HTTP requests.\n")
-	b.WriteString("# TYPE sentinel_http_requests_total counter\n")
+	b.WriteString("# HELP attesta_uptime_seconds Attesta API uptime in seconds.\n")
+	b.WriteString("# TYPE attesta_uptime_seconds gauge\n")
+	fmt.Fprintf(&b, "attesta_uptime_seconds %d\n", int(uptime.Seconds()))
+	b.WriteString("# HELP attesta_http_requests_total Total Attesta HTTP requests.\n")
+	b.WriteString("# TYPE attesta_http_requests_total counter\n")
 	for key, count := range m.requests {
 		parts := strings.Split(key, "|")
-		fmt.Fprintf(&b, "sentinel_http_requests_total{method=%q,route=%q,status=%q} %d\n", parts[0], parts[1], parts[2], count)
+		fmt.Fprintf(&b, "attesta_http_requests_total{method=%q,route=%q,status=%q} %d\n", parts[0], parts[1], parts[2], count)
 	}
 	return b.String()
 }

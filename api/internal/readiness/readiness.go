@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gauravgs7/sentinel/api/internal/models"
+	"github.com/gaurav-gs7/attesta/api/internal/models"
 )
 
 func Evaluate(service models.Service) models.ReadinessReport {

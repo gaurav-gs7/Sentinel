@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Service.Namespace }}
   labels:
     app.kubernetes.io/name: {{ .Service.Name }}
-    sentinel.dev/team: {{ .Service.Team }}
+    attesta.dev/team: {{ .Service.Team }}
 spec:
   groups:
     - name: {{ .Service.Name }}.slo
